@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  googleId      String?   @unique
+  githubId      String?   @unique
+  avatarUrl     String?
+  firstName     String
+  lastName      String?
+  username      String    @unique
+  password      String?
+  posts         Post[]    @relation(name: "PostsToUser")
+  likedPosts    Post[]
+  comments      Comment[] @relation(name: "CommentsToUser")
+  likedComments Comment[]
+  createdAt     DateTime  @default(now())
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  likedBy   User[]   @relation(name: "PostsToUser")
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, name: "CommentsToUser")
+  authorId  String
+  likedBy   User[]
+  createdAt DateTime @default(now())
+}
