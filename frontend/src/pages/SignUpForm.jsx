@@ -37,7 +37,7 @@ function SignUpForm() {
       if (result?.errors) {
         setErrors(result.errors);
       } else {
-        login(result.token, null);
+        login(result.token);
       }
     } catch (err) {
       console.error(err);
@@ -55,6 +55,8 @@ function SignUpForm() {
 
   return (
     <main className={styles["auth-container"]}>
+      <title>Sign up | Odin Book</title>
+
       <div className={styles["auth-card"]}>
         <header className={styles["auth-card__header"]}>
           <h2 className={styles["auth-card__title"]}>Sign up</h2>

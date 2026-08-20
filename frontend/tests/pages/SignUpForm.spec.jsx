@@ -82,7 +82,7 @@ describe("SignUpForm component", () => {
 
     // Verify context login function call
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith("fake-jwt-token", null);
+      expect(mockLogin).toHaveBeenCalledWith("fake-jwt-token");
     });
   });
 

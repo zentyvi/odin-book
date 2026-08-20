@@ -1,15 +1,15 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { googleLogIn } from "../api/functions/auth";
-import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthProvider.jsx";
 
 function GoogleLogInButton() {
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSuccess = async (credentialResponse) => {
     try {
       const result = await googleLogIn(credentialResponse);
       if (result?.token) {
-        navigate("/");
+        login(result.token);
       }
     } catch (err) {
       console.error(err);

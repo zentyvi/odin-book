@@ -3,16 +3,18 @@ import { render, screen, waitFor } from "@testing-library/react";
 import GoogleLogInButton from "../../src/components/GoogleLogInButton";
 import { googleLogIn } from "../../src/api/functions/auth";
 
-const mockNavigate = vi.fn();
-
-// Mock react-router useNavigate
-vi.mock("react-router", () => ({
-  useNavigate: () => mockNavigate,
-}));
-
 // Mock API function
 vi.mock("../../src/api/functions/auth", () => ({
   googleLogIn: vi.fn(),
+}));
+
+const mockLogin = vi.fn();
+
+// Mock Auth context hook
+vi.mock("../../src/contexts/AuthProvider.jsx", () => ({
+  useAuth: () => ({
+    login: mockLogin,
+  }),
 }));
 
 // Mock @react-oauth/google component to trigger onSuccess immediately
@@ -45,7 +47,7 @@ describe("GoogleLogInButton component", () => {
     });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/");
+      expect(mockLogin).toHaveBeenCalledWith(expect.any(String));
     });
   });
 
@@ -59,7 +61,7 @@ describe("GoogleLogInButton component", () => {
 
     await waitFor(() => {
       expect(googleLogIn).toHaveBeenCalled();
-      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(mockLogin).not.toHaveBeenCalled();
     });
   });
 });

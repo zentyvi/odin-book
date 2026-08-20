@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import { githubLogIn } from "../api/functions/auth";
 import Loader from "../components/Loader";
+import { useAuth } from "../contexts/AuthProvider.jsx";
 
 function GithubLogInPage() {
   const [params] = useSearchParams();
   const code = params.get("code");
   const [loading, setLoading] = useState(Boolean(code));
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
     if (!code) {
@@ -15,15 +16,15 @@ function GithubLogInPage() {
     }
     const main = async () => {
       try {
-        await githubLogIn(code);
-        navigate("/", { replace: true });
+        const result = await githubLogIn(code);
+        login(result.token);
       } catch (err) {
         setLoading(false);
         console.error(err);
       }
     };
     main();
-  }, [code, navigate]);
+  }, [code, login]);
 
   if (loading) return <Loader />;
 

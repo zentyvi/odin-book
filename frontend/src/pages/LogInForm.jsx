@@ -37,6 +37,7 @@ function LogInForm() {
 
   return (
     <main className={styles["auth-container"]}>
+      <title>Log in | Odin Book</title>
       <div className={styles["auth-card"]}>
         <header className={styles["auth-card__header"]}>
           <h2 className={styles["auth-card__title"]}>Log in</h2>

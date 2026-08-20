@@ -23,6 +23,7 @@
     "supertest": "^7.2.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.6.0",
     "vitest": "^4.1.10"
   }
 }
