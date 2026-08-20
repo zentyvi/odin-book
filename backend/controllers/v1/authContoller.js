@@ -18,6 +18,7 @@ async function $signUpPost(req, res, next) {
 
     const user = await prisma_client.user.create({
       data: {
+        type: "USERNAME",
         firstName,
         lastName,
         username,
@@ -122,6 +123,7 @@ async function googleLogInPost(req, res, next) {
       },
       update: {},
       create: {
+        type: "GOOGLE",
         googleId,
         avatarUrl: picture,
         firstName: given_name,
@@ -196,6 +198,7 @@ async function githubLogInPost(req, res, next) {
       where: { githubId },
       update: {},
       create: {
+        type: "GITHUB",
         githubId,
         firstName,
         lastName,

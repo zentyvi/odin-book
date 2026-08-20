@@ -101,10 +101,11 @@ describe("POST /sign-up controller", () => {
     expect(response.body).toHaveProperty("token");
     expect(prisma_client.user.create).toHaveBeenCalledWith({
       data: {
+        type: "USERNAME",
         firstName: validPayload.firstName,
         lastName: validPayload.lastName,
         username: validPayload.username,
-        password: "hashed-password", // This will now perfectly match!
+        password: "hashed-password",
       },
       select: {
         id: true,
@@ -226,6 +227,13 @@ describe("POST /log-in/google controller", () => {
       .post("/log-in/google")
       .send({ token: "123" });
 
+    expect(prisma_client.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          type: "GOOGLE",
+        }),
+      }),
+    );
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("token");
   });
@@ -275,6 +283,13 @@ describe("POST /log-in/github controller", () => {
       .post("/log-in/github")
       .send({ code: "123code" });
 
+    expect(prisma_client.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          type: "GITHUB",
+        }),
+      }),
+    );
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("token");
   });
