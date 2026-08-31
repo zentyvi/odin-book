@@ -1,10 +1,11 @@
+import { Link, useLocation } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { getFullName } from "../../utilis/helpers.js";
 import Avatar from "../../components/Avatar.jsx";
 
 const links = [
   {
-    path: "/home",
+    path: "/",
     title: "Home",
     unactive: <i className="bi bi-house" />,
     active: <i className="bi bi-house-fill" />,
@@ -16,7 +17,7 @@ const links = [
     active: <i className="bi bi-people-fill" />,
   },
   {
-    path: "/posts/create",
+    path: "/create/post",
     title: "Create post",
     unactive: <i className="bi bi-stickies" />,
     active: <i className="bi bi-stickies-fill" />,
@@ -24,8 +25,9 @@ const links = [
 ];
 
 function Header() {
+  const location = useLocation();
+  const currentPath = location.pathname;
   const authContext = useAuth();
-  const selected = location.pathname;
   const user = authContext?.user;
 
   return (
@@ -37,18 +39,20 @@ function Header() {
         <ul>
           {links.map((l) => (
             <li key={l.path}>
-              <a href={l.path} aria-label={l.title}>
-                {selected === l.path ? l.active : l.unactive}
-              </a>
+              <Link to={l.path} aria-label={l.title}>
+                {currentPath === l.path ? l.active : l.unactive}
+              </Link>
             </li>
           ))}
         </ul>
       </div>
       <div>
-        <Avatar user={user} showStatus={false} />
-        <div>
-          <span>{getFullName(user)}</span>
-        </div>
+        <Link to={`/users/${user?.username}`}>
+          <Avatar user={user} showStatus={false} />
+          <div>
+            <span>{getFullName(user)}</span>
+          </div>
+        </Link>
       </div>
     </header>
   );

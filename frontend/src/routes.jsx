@@ -5,10 +5,14 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import SignUpForm from "./pages/SignUpForm";
 import LogInForm from "./pages/LogInForm";
-import GithubLogInpage from "./pages/GithubLogInPage";
+import GithubLogInPage from "./pages/GithubLogInPage";
 
 import HomePage from "./pages/HomePage.jsx";
-import PostsFeed from "./pages/PostsFeed.jsx";
+import PostsFeed from "./features/postsFeed/PostsFeed.jsx";
+import SinglePostPage from "./features/postView/SinglePostPage.jsx";
+
+import UserProfilePage from "./features/profileView/UserProfilePage.jsx";
+import CreatePostPage from "./features/create/CreatePostPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,21 +24,25 @@ const router = createBrowserRouter([
         children: [
           { path: "auth/sign-up", element: <SignUpForm /> },
           { path: "auth/log-in", element: <LogInForm /> },
-          { path: "auth/github", element: <GithubLogInpage /> },
+          { path: "auth/github", element: <GithubLogInPage /> },
         ],
       },
       {
         element: <ProtectedRoute />,
         children: [
           {
-            path: "/",
-            index: true,
-            element: <Navigate to="/home" replace={true} />,
+            path: "/home",
+            element: <Navigate to="/" replace={true} />,
           },
           {
-            path: "/home",
+            path: "/",
             element: <HomePage />,
-            children: [{ index: true, element: <PostsFeed /> }],
+            children: [
+              { path: "/", element: <PostsFeed /> },
+              { path: "/posts/:postId", element: <SinglePostPage /> },
+              { path: "/users/:username", element: <UserProfilePage /> },
+              { path: "/create/post", element: <CreatePostPage /> },
+            ],
           },
         ],
       },

@@ -8,20 +8,39 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  type          UserType?
-  googleId      String?   @unique
-  githubId      String?   @unique
-  avatarUrl     String?
-  firstName     String
-  lastName      String?
-  username      String    @unique
-  password      String?
-  posts         Post[]    @relation(name: "PostsToUser")
-  likedPosts    Post[]
+  id       String    @id @default(uuid())
+  type     UserType?
+  googleId String?   @unique
+  githubId String?   @unique
+
+  avatarUrl String?
+  firstName String
+  lastName  String?
+  username  String  @unique
+  password  String?
+
+  posts         Post[]    @relation(name: "UserPosts")
+  likedPosts    Post[]    @relation(name: "UserLikedPosts")
   comments      Comment[] @relation(name: "CommentsToUser")
   likedComments Comment[]
-  createdAt     DateTime  @default(now())
+  friends       User[]    @relation("UserFriends")
+  symFriends    User[]    @relation("UserFriends")
+
+  sentRequests     FriendRequest[] @relation("Sender")
+  receivedRequests FriendRequest[] @relation("Receiver")
+  createdAt        DateTime        @default(now())
+}
+
+model FriendRequest {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
 }
 
 enum UserType {
@@ -32,12 +51,11 @@ enum UserType {
 
 model Post {
   id        String    @id @default(uuid())
-  title     String
   content   String
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User      @relation(name: "UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   comments  Comment[]
-  likedBy   User[]    @relation(name: "PostsToUser")
+  likedBy   User[]    @relation(name: "UserLikedPosts")
   createdAt DateTime  @default(now())
 }
 

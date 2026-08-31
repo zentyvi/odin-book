@@ -1,0 +1,72 @@
+import { Link } from "react-router";
+import { getFullName, getCalendarTime } from "../../utilis/helpers.js";
+import { likePost } from "../../api/functions/posts.js";
+import { useData } from "../../contexts/DataProvider.jsx";
+import Avatar from "../../components/Avatar.jsx";
+import LikeButton from "../../components/LikeButton.jsx";
+import { useModal } from "../../contexts/ModalProvider.jsx";
+
+function PostCard({ post, is24h = true }) {
+  const author = post?.author;
+  const isLiked = post?.likedBy?.length > 0;
+  const likesNumber = post?._count?.likedBy;
+  const commentsNumber = post?._count?.comments;
+  const { likePostInCache } = useData();
+  const { openModal } = useModal();
+
+  const handleLike = async () => {
+    const result = await likePost(post.id);
+    likePostInCache({ id: post.id, ...result });
+    return result;
+  };
+
+  return (
+    <li>
+      <article>
+        <header>
+          <button
+            aria-label="open author's profile"
+            onClick={() => openModal("USER_PREVIEW", author)}
+          >
+            <Avatar user={author} showStatus={false} />
+          </button>
+          <div>
+            <button
+              aria-label="open author's profile"
+              onClick={() => openModal("USER_PREVIEW", author)}
+            >
+              <span>{getFullName(author)}</span>
+            </button>
+            <span>{getCalendarTime(post?.createdAt, is24h)}</span>
+          </div>
+        </header>
+        <main>
+          <Link to={`/posts/${post.id}#`} aria-label="To post" state={post}>
+            <p>{post?.content}</p>
+          </Link>
+        </main>
+        <footer>
+          <div>
+            <LikeButton
+              initialState={isLiked}
+              likesNumber={likesNumber}
+              onLike={handleLike}
+            />
+            <div>
+              <Link
+                to={`/posts/${post.id}#comments`}
+                aria-label="To comments"
+                state={post}
+              >
+                <i className="bi bi-chat-fill" />
+              </Link>
+              <span aria-label="Comments number">{commentsNumber}</span>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </li>
+  );
+}
+
+export default PostCard;

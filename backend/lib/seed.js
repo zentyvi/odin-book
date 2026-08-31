@@ -19,7 +19,7 @@ async function main() {
   async function createUser() {
     const user = await prisma_client.user.create({
       data: {
-        avatarUrl: faker.image.avatar(),
+        avatarUrl: faker.image.avatarGitHub(),
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         username: faker.internet.username(),
@@ -93,7 +93,6 @@ async function main() {
 
     const post = await prisma_client.post.create({
       data: {
-        title: faker.book.title(),
         content: faker.lorem.lines({ min: 3, max: 20 }),
         author: {
           connect: {

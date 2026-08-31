@@ -1,9 +1,9 @@
-import { useOutletContext } from "react-router";
-import Loader from "../components/Loader.jsx";
-import PostCard from "../components/PostCard.jsx";
+import Loader from "../../components/Loader.jsx";
+import PostCard from "./PostCard.jsx";
+import { useData } from "../../contexts/DataProvider.jsx";
 
 function PostsFeed() {
-  const { posts, options } = useOutletContext();
+  const { posts, options } = useData();
   const loading = posts?.length === 0;
 
   if (loading) {
@@ -12,11 +12,11 @@ function PostsFeed() {
 
   return (
     <main>
-      <div>
+      <ul>
         {posts.map((p) => (
           <PostCard post={p} key={p.id} is24h={options?.is24h} />
         ))}
-      </div>
+      </ul>
     </main>
   );
 }

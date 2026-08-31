@@ -1,6 +1,7 @@
 const styles = {};
 
 function FormInput({
+  disabled,
   type = "text",
   name,
   id,
@@ -33,6 +34,7 @@ function FormInput({
 
       {type !== "textarea" ? (
         <input
+          disabled={disabled}
           type={type}
           name={name || id}
           id={id}
@@ -44,6 +46,7 @@ function FormInput({
         />
       ) : (
         <textarea
+          disabled={disabled}
           name={name || id}
           id={id}
           onChange={onChange}

@@ -10,7 +10,7 @@ import Header from "../features/header/Header.jsx";
 function HomePage() {
   const [loading, setLoading] = useState(false);
   const authContext = useAuth();
-  const dataContext = useData();
+  const { setPosts, posts, mergePosts } = useData();
 
   useEffect(() => {
     if (authContext?.user) return;
@@ -30,26 +30,21 @@ function HomePage() {
   useEffect(() => {
     const main = async () => {
       try {
-        const posts = await getFeed();
-        dataContext.setPosts(posts);
+        const feed = await getFeed();
+        setPosts((prevPosts) => mergePosts(prevPosts, feed));
       } catch (err) {
         console.error(err);
       }
     };
 
-    if (dataContext.posts?.length === 0) {
+    if (posts?.length === 0) {
       main();
     }
 
-    const intervalId = setInterval(
-      () => {
-        main();
-      },
-      5 * 60 * 1000,
-    );
-
+    const intervalId = setInterval(main, 5 * 60 * 1000);
     return () => clearInterval(intervalId);
-  }, [dataContext]);
+    // eslint-disable-next-line
+  }, []);
 
   if (loading) {
     return <Loader />;
@@ -58,7 +53,7 @@ function HomePage() {
   return (
     <div id="main-wrapper">
       <Header />
-      <Outlet context={dataContext} />
+      <Outlet />
     </div>
   );
 }
