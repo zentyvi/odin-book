@@ -68,7 +68,10 @@ export function DataProvider({ children }) {
   const likeCommentInCache = (updatedCommentData) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
-        if (post.id === updatedCommentData.postId) {
+        if (
+          post.id === updatedCommentData.postId &&
+          post?.comments !== undefined
+        ) {
           return {
             ...post,
             comments: post.comments.map((comment) => {

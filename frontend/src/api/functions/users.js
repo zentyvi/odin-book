@@ -89,10 +89,47 @@ async function handleRequestAction(requestId, action) {
   return result;
 }
 
+async function deleteFriend(friendId) {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me/friends/${friendId}`, {
+    method: "DELETE",
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete friend");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+async function getMyFriends() {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me/friends`, {
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch friends");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
 export {
   getMyInfo,
   getUserPreview,
   createFriendRequest,
   getUserProfile,
   handleRequestAction,
+  deleteFriend,
+  getMyFriends,
 };

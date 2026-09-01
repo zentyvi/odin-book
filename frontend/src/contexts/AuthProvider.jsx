@@ -18,6 +18,32 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const mergeFriends = (existingFriends, newFriends) => {
+    const friendsMap = new Map();
+
+    existingFriends.forEach((f) => friendsMap.set(f.id, f));
+
+    newFriends.forEach((newFriend) => {
+      const existing = friendsMap.get(newFriend.id);
+
+      if (existing) {
+        friendsMap.set(newFriend.id, { ...existing, ...newFriend });
+      } else {
+        friendsMap.set(newFriend.id, newFriend);
+      }
+    });
+
+    return Array.from(friendsMap.values());
+  };
+
+  const removeFriendFromCache = (friendId) => {
+    if (!user) return;
+    const friends = user?.friends || [];
+    setUser((prev) => {
+      return { ...prev, friends: friends.filter((f) => f.id !== friendId) };
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -25,6 +51,8 @@ export function AuthProvider({ children }) {
         setToken,
         user,
         setUser,
+        mergeFriends,
+        removeFriendFromCache,
         isAuthenticated: !!token,
         login,
         logout,

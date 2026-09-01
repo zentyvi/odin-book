@@ -27,7 +27,7 @@ function PostComments({ comments, postId }) {
         </div>
       ) : (
         <div>
-          <h2>There is nothing</h2>
+          <h3>There is nothing</h3>
           <p>Be the first!</p>
         </div>
       )}
