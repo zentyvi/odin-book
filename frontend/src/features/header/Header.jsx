@@ -17,6 +17,12 @@ const links = [
     active: <i className="bi bi-people-fill" />,
   },
   {
+    path: "/search/users",
+    title: "Search users",
+    unactive: <i className="bi bi-search-heart" />,
+    active: <i className="bi bi-search-heart-fill" />,
+  },
+  {
     path: "/create/post",
     title: "Create post",
     unactive: <i className="bi bi-stickies" />,
@@ -39,7 +45,7 @@ function Header() {
         <ul>
           {links.map((l) => (
             <li key={l.path}>
-              <Link to={l.path} aria-label={l.title}>
+              <Link to={l.path} aria-label={l.title} title={l.title}>
                 {currentPath === l.path ? l.active : l.unactive}
               </Link>
             </li>

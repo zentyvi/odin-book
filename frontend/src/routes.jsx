@@ -14,6 +14,7 @@ import CreatePostPage from "./features/create/CreatePostPage.jsx";
 import UserProfilePage from "./features/profileView/UserProfilePage.jsx";
 import SinglePostPage from "./features/postView/SinglePostPage.jsx";
 import ProfileEditPage from "./features/profileEdit/ProfileEditPage.jsx";
+import SearchPage from "./features/search/searchPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
               { path: "/create/post", element: <CreatePostPage /> },
               { path: "/friends", element: <FriendsPage /> },
               { path: "/me/edit", element: <ProfileEditPage /> },
+              { path: "/search/users", element: <SearchPage /> },
             ],
           },
         ],
