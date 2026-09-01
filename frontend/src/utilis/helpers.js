@@ -5,6 +5,9 @@ export function getFullName(user) {
 }
 
 export function getCalendarTime(date, is24h = true) {
+  if (date === undefined) {
+    return "N/A";
+  }
   const timeFormat = is24h ? "HH:mm" : "hh:mm A";
 
   const calendarConfig = {
@@ -28,4 +31,18 @@ export function formatNumber(number) {
   }
 
   return formatedNumber;
+}
+
+export function capitalizeFirstLetter(val) {
+  if (val?.length === 0) return "";
+  return (
+    String(val).charAt(0).toUpperCase() + String(val).slice(1).toLowerCase()
+  );
+}
+
+export function getRandomNumberFromString(string) {
+  let r = string.split("").reduce((a, r) => {
+    return r.charCodeAt();
+  }, 0);
+  return (r % 5) + 1;
 }

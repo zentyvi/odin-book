@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useLocation, useParams } from "react-router";
+import { Link, useLocation, useParams } from "react-router";
 import {
   getUserProfile,
   createFriendRequest,
@@ -115,12 +115,23 @@ function UserProfilePage() {
     <main>
       <header>
         <div>
-          <Avatar user={user} />
           <div>
             <div>
-              <h2>{fullName}</h2>
-              <span>@{user?.username}</span>
+              <Avatar user={user} />
+              <div>
+                <h2>{fullName}</h2>
+                <span>@{user?.username}</span>
+              </div>
             </div>
+            {isMyProfile && (
+              <div>
+                <Link to="/me/edit" replace={true}>
+                  Edit profile <i className="bi bi-pencil-fill" />
+                </Link>
+              </div>
+            )}
+          </div>
+          <div>
             <div>
               {statsLoaded ? (
                 <ul>

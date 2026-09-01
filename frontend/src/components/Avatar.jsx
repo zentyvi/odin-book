@@ -1,11 +1,5 @@
+import { getRandomNumberFromString } from "../utilis/helpers.js";
 const styles = {};
-
-function getRandomNumberFromString(string) {
-  let r = string.split("").reduce((a, r) => {
-    return r.charCodeAt(0);
-  }, 0);
-  return (r % 5) + 1;
-}
 
 function Avatar({ user, alt, showStatus = false, className = "" }) {
   // Safe fallback if user object is missing

@@ -8,16 +8,18 @@ import Loader from "../components/Loader";
 import Header from "../features/header/Header.jsx";
 
 function HomePage() {
-  const [loading, setLoading] = useState(false);
-  const authContext = useAuth();
+  const { user, setUser, isAuthenticated } = useAuth();
   const { setPosts, posts, mergePosts } = useData();
+  const [loading, setLoading] = useState(
+    (isAuthenticated && !user) || posts?.length === 0,
+  );
 
   useEffect(() => {
-    if (authContext?.user) return;
+    if (user) return;
     const main = async () => {
       try {
         const result = await getMyInfo();
-        authContext?.setUser(result);
+        setUser(result);
       } catch (err) {
         console.error(err);
       } finally {
@@ -25,7 +27,8 @@ function HomePage() {
       }
     };
     main();
-  }, [authContext]);
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     const main = async () => {

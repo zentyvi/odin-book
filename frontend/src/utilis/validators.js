@@ -1,4 +1,4 @@
-const validateFirstName = (e, setValue, setErrors) => {
+const validateFirstName = (e, setValue, setErrors, field = "firstName") => {
   const { value } = e.target;
   setValue(value);
 
@@ -8,7 +8,7 @@ const validateFirstName = (e, setValue, setErrors) => {
     if (!result) {
       setErrors((prev) => ({
         ...prev,
-        firstName: {
+        [field]: {
           msg: "First name cannot contain special characters and numbers",
         },
       }));
@@ -17,15 +17,15 @@ const validateFirstName = (e, setValue, setErrors) => {
     if (value.length > 20) {
       setErrors((prev) => ({
         ...prev,
-        firstName: { msg: "First name's length cannot exceed 20 characters" },
+        [field]: { msg: "First name's length cannot exceed 20 characters" },
       }));
       return;
     }
   }
-  setErrors((prev) => ({ ...prev, firstName: null }));
+  setErrors((prev) => ({ ...prev, [field]: null }));
 };
 
-const validateLastName = (e, setValue, setErrors) => {
+const validateLastName = (e, setValue, setErrors, field = "lastName") => {
   const { value } = e.target;
   setValue(value);
 
@@ -35,7 +35,7 @@ const validateLastName = (e, setValue, setErrors) => {
     if (!result) {
       setErrors((prev) => ({
         ...prev,
-        lastName: {
+        [field]: {
           msg: "Last name cannot contain special characters and numbers",
         },
       }));
@@ -44,15 +44,15 @@ const validateLastName = (e, setValue, setErrors) => {
     if (value.length > 20) {
       setErrors((prev) => ({
         ...prev,
-        lastName: { msg: "Last name's length cannot exceed 20 characters" },
+        [field]: { msg: "Last name's length cannot exceed 20 characters" },
       }));
       return;
     }
   }
-  setErrors((prev) => ({ ...prev, lastName: null }));
+  setErrors((prev) => ({ ...prev, [field]: null }));
 };
 
-const validateUsername = (e, setValue, setErrors) => {
+const validateUsername = (e, setValue, setErrors, field = "username") => {
   const { value } = e.target;
   setValue(value);
 
@@ -62,7 +62,7 @@ const validateUsername = (e, setValue, setErrors) => {
     if (!result) {
       setErrors((prev) => ({
         ...prev,
-        username: {
+        [field]: {
           msg: "Username cannot contain special characters",
         },
       }));
@@ -71,17 +71,17 @@ const validateUsername = (e, setValue, setErrors) => {
     if (value.length > 20 || value.length < 3) {
       setErrors((prev) => ({
         ...prev,
-        username: {
+        [field]: {
           msg: "Username must be between 3 and 20 characters",
         },
       }));
       return;
     }
   }
-  setErrors((prev) => ({ ...prev, username: null }));
+  setErrors((prev) => ({ ...prev, [field]: null }));
 };
 
-const validatePassword = (e, setValue, setErrors) => {
+const validatePassword = (e, setValue, setErrors, field = "password") => {
   const { value } = e.target;
   setValue(value);
 
@@ -91,7 +91,7 @@ const validatePassword = (e, setValue, setErrors) => {
     if (!result) {
       setErrors((prev) => ({
         ...prev,
-        password: {
+        [field]: {
           msg: "Password can contain only letters, numbers and symbols without spaces",
         },
       }));
@@ -100,12 +100,12 @@ const validatePassword = (e, setValue, setErrors) => {
     if (value.length < 6) {
       setErrors((prev) => ({
         ...prev,
-        password: { msg: "Password must contain at least 6 characters" },
+        [field]: { msg: "Password must contain at least 6 characters" },
       }));
       return;
     }
   }
-  setErrors((prev) => ({ ...prev, password: null }));
+  setErrors((prev) => ({ ...prev, [field]: null }));
 };
 
 export {

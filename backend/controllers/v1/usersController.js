@@ -1,5 +1,11 @@
+import { validationResult } from "express-validator";
+import bcrypt from "bcryptjs";
 import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
+import { isCloudinaryUrl } from "../../utils/helpers.js";
+import validateProfileUpdate from "../../middlewares/validateProfileUpdate.js";
+import validateAvatar from "../../middlewares/validators/validateAvatar.js";
+import cloudinaryPublic from "../../utils/cloudinary.js";
 
 async function $getMyInfo(req, res, next) {
   try {
@@ -15,6 +21,7 @@ async function $getMyInfo(req, res, next) {
         firstName: true,
         lastName: true,
         username: true,
+        createdAt: true,
       },
     });
 
@@ -402,6 +409,190 @@ async function $getMyFriends(req, res, next) {
 
 const getMyFriends = [protectRoute, $getMyFriends];
 
+async function $updateMyProfile(req, res, next) {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: false, errors: errors.mapped() });
+    }
+
+    const userId = req.user?.id;
+    const { infoToUpdate, passwordConfirm } = req.body;
+    const user = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        type: true,
+        password: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (infoToUpdate?.password !== undefined && user?.type === "USERNAME") {
+      const passwordMatch = await bcrypt.compare(
+        passwordConfirm,
+        user.password,
+      );
+      if (passwordMatch) {
+        if (infoToUpdate.password) {
+          infoToUpdate.password = await bcrypt.hash(infoToUpdate.password, 10);
+        }
+        await prisma_client.user.update({
+          where: {
+            id: userId,
+          },
+          data: infoToUpdate,
+        });
+      } else {
+        return res.status(400).json({
+          errors: { confirmPassword: { msg: "Password is incorrect" } },
+        });
+      }
+    } else if (
+      infoToUpdate?.password !== undefined &&
+      user?.type !== "USERNAME"
+    ) {
+      return res.status(400).json({
+        message:
+          "Failed to update password because another authentication method is in use",
+      });
+    } else {
+      await prisma_client.user.update({
+        where: {
+          id: userId,
+        },
+        data: infoToUpdate,
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ data: infoToUpdate.password ? {} : infoToUpdate });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const updateMyProfile = [protectRoute, validateProfileUpdate, $updateMyProfile];
+
+async function $uploadAvatarPut(req, res, next) {
+  try {
+    const userId = req.user?.id;
+    const file = req.file;
+    const fileString = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    const cloudinaryResponse = await cloudinaryPublic.uploader.upload(
+      fileString,
+      {
+        resource_type: "image",
+      },
+    );
+
+    const existingUser = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        avatarUrl: true,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (isCloudinaryUrl(existingUser?.avatarUrl)) {
+      const url = existingUser.avatarUrl;
+      const splittedUrl = url.split("/");
+      const lastSegment = splittedUrl[splittedUrl.length - 1];
+      const publicId = lastSegment.split(".")[0];
+
+      const cloudinaryResponse =
+        await cloudinaryPublic.uploader.destroy(publicId);
+
+      if (cloudinaryResponse.result !== "ok") {
+        throw new Error(
+          `Cloudinary deletion failed: ${cloudinaryResponse.result}`,
+        );
+      }
+    }
+
+    const user = await prisma_client.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatarUrl: cloudinaryResponse.secure_url,
+      },
+      select: {
+        avatarUrl: true,
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Succeed", avatarUrl: user.avatarUrl });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const uploadAvatarPut = [protectRoute, validateAvatar, $uploadAvatarPut];
+
+async function $deleteAvatar(req, res, next) {
+  try {
+    const userId = req.user?.id;
+
+    const existingUser = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        avatarUrl: true,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    await prisma_client.user.update({
+      where: {
+        id: userId,
+      },
+
+      data: {
+        avatarUrl: null,
+      },
+    });
+
+    if (isCloudinaryUrl(existingUser?.avatarUrl)) {
+      const url = existingUser.avatarUrl;
+      const splittedUrl = url.split("/");
+      const lastSegment = splittedUrl[splittedUrl.length - 1];
+      const publicId = lastSegment.split(".")[0];
+
+      const cloudinaryResponse =
+        await cloudinaryPublic.uploader.destroy(publicId);
+
+      if (cloudinaryResponse.result !== "ok") {
+        throw new Error(
+          `Cloudinary deletion failed: ${cloudinaryResponse.result}`,
+        );
+      }
+    }
+
+    return res.status(200).json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const deleteAvatar = [protectRoute, $deleteAvatar];
+
 const usersController = {
   getMyInfo,
   getUserPreview,
@@ -410,6 +601,9 @@ const usersController = {
   handleRequestAction,
   deleteFriend,
   getMyFriends,
+  updateMyProfile,
+  uploadAvatarPut,
+  deleteAvatar,
 };
 
 export default usersController;

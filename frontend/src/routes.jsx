@@ -13,6 +13,7 @@ import FriendsPage from "./features/friendsView/FriendsPage.jsx";
 import CreatePostPage from "./features/create/CreatePostPage.jsx";
 import UserProfilePage from "./features/profileView/UserProfilePage.jsx";
 import SinglePostPage from "./features/postView/SinglePostPage.jsx";
+import ProfileEditPage from "./features/profileEdit/ProfileEditPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
               { path: "/users/:username", element: <UserProfilePage /> },
               { path: "/create/post", element: <CreatePostPage /> },
               { path: "/friends", element: <FriendsPage /> },
+              { path: "/me/edit", element: <ProfileEditPage /> },
             ],
           },
         ],

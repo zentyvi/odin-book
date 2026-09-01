@@ -124,6 +124,63 @@ async function getMyFriends() {
   return result;
 }
 
+async function updateMyInfo(data) {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me`, {
+    method: "PATCH",
+    headers: {
+      authorization: bearer,
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok && response.status !== 400) {
+    throw new Error("Failed update profile info");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+async function uploadAvatar(formData) {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me/avatar`, {
+    method: "PUT",
+    headers: {
+      authorization: bearer,
+    },
+    body: formData,
+  });
+
+  if (!response.ok && response.status !== 400) {
+    throw new Error("Failed to upload avatar");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+async function deleteAvatar() {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me/avatar`, {
+    method: "DELETE",
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete avatar");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
 export {
   getMyInfo,
   getUserPreview,
@@ -132,4 +189,7 @@ export {
   handleRequestAction,
   deleteFriend,
   getMyFriends,
+  updateMyInfo,
+  uploadAvatar,
+  deleteAvatar,
 };
