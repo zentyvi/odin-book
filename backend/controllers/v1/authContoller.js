@@ -3,7 +3,8 @@ import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma_client } from "../../lib/prisma.js";
-import validateSignUp from "../../middlewares/validateSignUp.js";
+import { makeid } from "../../utils/helpers.js";
+import validateSignUp from "../../middlewares/validators/validateSignUp.js";
 
 const google_client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -88,18 +89,6 @@ async function logInPost(req, res, next) {
   }
 }
 
-const idLength = 10;
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 async function googleLogInPost(req, res, next) {
   try {
     const { token: googleToken } = req.body;
@@ -115,7 +104,7 @@ async function googleLogInPost(req, res, next) {
     });
     const payload = ticket.getPayload();
     const { sub: googleId, given_name, family_name, picture } = payload;
-    const username = `User-${makeid(idLength)}`;
+    const username = `User-${makeid(10)}`;
 
     const user = await prisma_client.user.upsert({
       where: {

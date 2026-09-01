@@ -1,19 +1,18 @@
 import { body } from "express-validator";
-import { prisma_client } from "../lib/prisma.js";
+import { prisma_client } from "../../lib/prisma.js";
 
-const validateProfileUpdate = [
-  body("infoToUpdate.name")
-    .optional()
+const validateSignUp = [
+  body("firstName")
     .trim()
     .notEmpty()
-    .withMessage("Name cannot be blank")
+    .withMessage("First name cannot be blank")
     .matches(/^[A-ZА-ЯЁ]+$/i)
-    .withMessage("Name cannot contarin special characters and numbers")
+    .withMessage("First name cannot contarin special characters and numbers")
     .isLength({ max: 20 })
-    .withMessage("Name's length cannot exceed 20 characters"),
+    .withMessage("First name's length cannot exceed 20 characters"),
 
-  body("infoToUpdate.lastName")
-    .optional()
+  body("lastName")
+    .optional({ nullable: true })
     .trim()
     .notEmpty()
     .withMessage("Last name cannot be blank")
@@ -22,8 +21,7 @@ const validateProfileUpdate = [
     .isLength({ max: 20 })
     .withMessage("Last name's length cannot exceed 20 characters"),
 
-  body("infoToUpdate.username")
-    .optional()
+  body("username")
     .trim()
     .notEmpty()
     .withMessage("Username cannot be blank")
@@ -35,7 +33,7 @@ const validateProfileUpdate = [
     .contains(" ")
     .withMessage("Usernmae cannot contain spaces")
     .custom(async (value) => {
-      const user = await prisma_client.user.findUnique({
+      const user = await prisma_client.user.findFirst({
         where: {
           username: value,
         },
@@ -47,8 +45,7 @@ const validateProfileUpdate = [
 
       return true;
     }),
-  body("infoToUpdate.password")
-    .optional()
+  body("password")
     .trim()
     .notEmpty()
     .withMessage("Password cannot be blank")
@@ -60,4 +57,4 @@ const validateProfileUpdate = [
     .withMessage("Password must contain at least 6 characters"),
 ];
 
-export default validateProfileUpdate;
+export default validateSignUp;

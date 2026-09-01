@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
 import { isCloudinaryUrl } from "../../utils/helpers.js";
-import validateProfileUpdate from "../../middlewares/validateProfileUpdate.js";
+import validateProfileUpdate from "../../middlewares/validators/validateProfileUpdate.js";
 import validateAvatar from "../../middlewares/validators/validateAvatar.js";
 import cloudinaryPublic from "../../utils/cloudinary.js";
 

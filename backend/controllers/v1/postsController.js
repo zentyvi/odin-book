@@ -1,8 +1,8 @@
 import { validationResult } from "express-validator";
 import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
-import validateComment from "../../middlewares/validateComment.js";
-import validatePost from "../../middlewares/validatePost.js";
+import validateComment from "../../middlewares/validators/validateComment.js";
+import validatePost from "../../middlewares/validators/validatePost.js";
 
 async function getFeed(req, res, next) {
   try {

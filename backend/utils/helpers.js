@@ -3,3 +3,14 @@ export const isCloudinaryUrl = (url) => {
     /https?:\/\/(?:res\.cloudinary\.com|([a-z0-9]+)\.cloudinary\.com)/i;
   return cloudinaryPattern.test(url);
 };
+
+export function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
