@@ -39,8 +39,7 @@ const links = [
 function Header() {
   const location = useLocation();
   const currentPath = location.pathname;
-  const authContext = useAuth();
-  const user = authContext?.user;
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <header>
@@ -59,12 +58,20 @@ function Header() {
         </ul>
       </div>
       <div>
-        <Link to={`/users/${user?.username}`} aria-label="To your profile">
-          <Avatar user={user} showStatus={false} />
-          <div>
-            <span>{getFullName(user)}</span>
-          </div>
-        </Link>
+        {isAuthenticated && user ? (
+          <Link to={`/users/${user?.username}`} aria-label="To your profile">
+            <Avatar user={user} showStatus={false} />
+            <div>
+              <span>{getFullName(user)}</span>
+            </div>
+          </Link>
+        ) : (
+          <>
+            <Link to="/auth/log-in" replace={true}>
+              Log in
+            </Link>
+          </>
+        )}
       </div>
     </header>
   );

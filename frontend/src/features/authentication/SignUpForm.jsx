@@ -20,7 +20,7 @@ function SignUpForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, continueAsGuest } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,6 +69,11 @@ function SignUpForm() {
             >
               Log in
             </Link>
+            . Or continue as a{" "}
+            <Link to="/" replace={true} onClick={continueAsGuest}>
+              guest
+            </Link>
+            .
           </p>
         </header>
 

@@ -1,5 +1,5 @@
 import FocusLock from "react-focus-lock";
-import { useModal } from "../../contexts/ModalProvider.jsx";
+import { useModal } from "../../../contexts/ModalProvider.jsx";
 import UserProfileModal from "./UserProfileModal.jsx";
 import { useEffect } from "react";
 

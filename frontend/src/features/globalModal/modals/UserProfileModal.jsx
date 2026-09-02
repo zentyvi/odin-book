@@ -1,17 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { getFullName } from "../../utilis/helpers.js";
+import { getFullName } from "../../../utilis/helpers.js";
 import {
   createFriendRequest,
   deleteFriend,
   getUserPreview,
-} from "../../api/functions/users.js";
-import Avatar from "../../components/Avatar.jsx";
-import { useAuth } from "../../contexts/AuthProvider.jsx";
+} from "../../../api/functions/users.js";
+import Avatar from "../../../components/Avatar.jsx";
+import { useAuth } from "../../../contexts/AuthProvider.jsx";
+import { useModal } from "../../../contexts/ModalProvider.jsx";
 
 function UserProfileModal({ data, closeModal }) {
   const [user, setUser] = useState(data);
-  const { user: currentUser, removeFriendFromCache } = useAuth();
+  const { sendNotification } = useModal();
+  const {
+    user: currentUser,
+    removeFriendFromCache,
+    isAuthenticated,
+  } = useAuth();
 
   const isMyProfile = currentUser?.id === user?.id;
   const fullName = getFullName(user);
@@ -48,10 +54,23 @@ function UserProfileModal({ data, closeModal }) {
 
   const handleFriendRequest = async () => {
     try {
-      requestButtonRef.current.textContent = "Sending...";
-      requestButtonRef.current.disabled = true;
+      const { current: button } = requestButtonRef;
+      if (!isAuthenticated) {
+        sendNotification(
+          "Error",
+          "Please log in first to add friends",
+          "ERROR",
+        );
+        button.disabled = true;
+        setTimeout(() => {
+          button.disabled = false;
+        }, 3000);
+        return;
+      }
+      button.textContent = "Sending...";
+      button.disabled = true;
       await createFriendRequest(user?.id);
-      requestButtonRef.current.textContent = "Sent!";
+      button.textContent = "Sent!";
     } catch (err) {
       console.error(err);
     }

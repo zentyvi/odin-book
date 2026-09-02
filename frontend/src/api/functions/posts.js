@@ -37,9 +37,6 @@ async function getSinglePost(postId) {
 
 async function likePost(postId) {
   const token = localStorage.getItem("token");
-  if (!token) {
-    return { isLiked: false };
-  }
 
   const bearer = `Bearer ${token}`;
   const response = await fetch(`${api_url}/posts/${postId}/like`, {

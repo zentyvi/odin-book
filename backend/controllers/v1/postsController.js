@@ -8,7 +8,7 @@ import cloudinaryPublic from "../../utils/cloudinary.js";
 
 async function getFeed(req, res, next) {
   try {
-    const userId = req?.user?.id;
+    const userId = req?.user?.id || "";
 
     const posts = await prisma_client.post.findMany({
       select: {
@@ -50,7 +50,7 @@ async function getFeed(req, res, next) {
 
 async function getSinglePost(req, res, next) {
   try {
-    const userId = req?.user?.id;
+    const userId = req?.user?.id || "";
     const { postId } = req.params;
 
     const post = await prisma_client.post.findFirst({

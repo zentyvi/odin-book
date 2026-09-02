@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router";
 import { getMyInfo, getMySettings } from "../api/functions/users.js";
 import { useAuth } from "../contexts/AuthProvider.jsx";
@@ -9,15 +9,14 @@ import Header from "../features/header/Header.jsx";
 import { getMyLocalSettings, updateLocalSettings } from "../utilis/helpers.js";
 
 function HomePage() {
-  const { user, setUser, isAuthenticated } = useAuth();
+  const { user, setUser, guestMode, isAuthenticated } = useAuth();
   const { setPosts, posts, mergePosts, setSettings } = useData();
-  const [loading, setLoading] = useState(
-    (isAuthenticated && !user) || posts?.length === 0,
-  );
+
+  const loading = (!guestMode && !user) || posts?.length === 0;
 
   useEffect(() => {
-    if (user) return;
     const main = async () => {
+      if ((isAuthenticated && user) || guestMode) return;
       try {
         const result = await getMyInfo();
         const localSettings = getMyLocalSettings();
@@ -32,8 +31,6 @@ function HomePage() {
         setUser(result);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
     main();

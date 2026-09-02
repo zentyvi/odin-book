@@ -1,9 +1,9 @@
 import { useModal } from "../../contexts/ModalProvider.jsx";
 import { getFullName } from "../../utilis/helpers.js";
-import Avatar from "../../components/Avatar.jsx";
 import { handleRequestAction } from "../../api/functions/users.js";
+import Avatar from "../../components/Avatar.jsx";
 
-function FriendRequest({ request, setUser }) {
+function FriendRequestItem({ request, setUser }) {
   const { openModal } = useModal();
   const sender = request?.sender;
   const fullName = getFullName(sender);
@@ -69,4 +69,4 @@ function FriendRequest({ request, setUser }) {
   );
 }
 
-export default FriendRequest;
+export default FriendRequestItem;

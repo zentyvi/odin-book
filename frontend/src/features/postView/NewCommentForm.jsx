@@ -66,7 +66,7 @@ function NewCommentForm({ postId }) {
         </form>
       ) : (
         <div className={style["comments__auth-prompt"]}>
-          <p>You must log in to add comments.</p>
+          <p>You must log in to create comments.</p>
           <Link to="/log-in" className="btn btn--secondary">
             Log in
           </Link>

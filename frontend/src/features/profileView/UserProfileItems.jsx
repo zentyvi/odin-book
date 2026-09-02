@@ -1,7 +1,7 @@
 import Loader from "../../components/Loader.jsx";
 import PostCard from "../postsFeed/PostCard.jsx";
 import Comment from "../postView/Comment.jsx";
-import FriendRequest from "./FriendRequest.jsx";
+import FriendRequestItem from "./FriendRequestItem.jsx";
 
 const style = {};
 
@@ -28,7 +28,7 @@ function UserProfileItems({ type, data, setUser }) {
     case "REQUESTS":
       message = "You don't have any friend requests now 🫤";
       items = data.map((r) => (
-        <FriendRequest key={r.id} request={r} setUser={setUser} />
+        <FriendRequestItem key={r.id} request={r} setUser={setUser} />
       ));
       break;
   }

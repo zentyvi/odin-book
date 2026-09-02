@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/AuthProvider.jsx";
 import Loader from "../../components/Loader.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import UserProfileItems from "./UserProfileItems.jsx";
+import { useModal } from "../../contexts/ModalProvider.jsx";
 
 function UserProfilePage() {
   const location = useLocation();
@@ -17,7 +18,12 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(!user);
   const [selectedSection, setSelectedSection] = useState("POSTS");
   const { username } = useParams();
-  const { user: currentUser, removeFriendFromCache } = useAuth();
+  const { sendNotification } = useModal();
+  const {
+    user: currentUser,
+    removeFriendFromCache,
+    isAuthenticated,
+  } = useAuth();
 
   const isMyProfile = currentUser?.id === user?.id;
 
@@ -68,17 +74,30 @@ function UserProfilePage() {
 
   const handleFriendRequest = async () => {
     try {
-      requestButtonRef.current.textContent = "Sending...";
-      requestButtonRef.current.disabled = true;
+      const { current: button } = requestButtonRef;
+      if (!isAuthenticated) {
+        sendNotification(
+          "Error",
+          "Please log in first to add friends",
+          "ERROR",
+        );
+        button.disabled = true;
+        setTimeout(() => {
+          button.disabled = false;
+        }, 3000);
+        return;
+      }
+      button.textContent = "Sending...";
+      button.disabled = true;
       await createFriendRequest(user?.id);
-      requestButtonRef.current.textContent = "Sent!";
+      button.textContent = "Sent!";
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleDeleteFriend = async () => {
-    const button = requestButtonRef.current;
+    const { current: button } = requestButtonRef;
     const lastContent = button.textContent;
     try {
       button.disabled = true;

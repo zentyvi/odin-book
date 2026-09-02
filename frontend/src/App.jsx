@@ -1,11 +1,13 @@
 import { Outlet } from "react-router";
-import GlobalModal from "./features/globalModal/GlobalModal.jsx";
+import GlobalModal from "./features/globalModal/modals/GlobalModal.jsx";
+import Notifications from "./features/globalModal/notifications/Notifications.jsx";
 
 function App() {
   return (
     <>
       <Outlet />
       <GlobalModal />
+      <Notifications />
     </>
   );
 }

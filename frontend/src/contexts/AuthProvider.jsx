@@ -5,11 +5,21 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(null);
+  const [guestMode, setGuestMode] = useState(
+    localStorage.getItem("mode") === "GUEST",
+  );
+
+  const continueAsGuest = () => {
+    localStorage.setItem("mode", "GUEST");
+    setGuestMode(true);
+  };
 
   const login = (newToken, userData = null) => {
     localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
+    setGuestMode(false);
+    localStorage.removeItem("mode");
   };
 
   const logout = () => {
@@ -47,6 +57,9 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        guestMode,
+        setGuestMode,
+        continueAsGuest,
         token,
         setToken,
         user,
