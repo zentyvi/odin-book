@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { logIn } from "../api/functions/auth";
-import FormInput from "../components/FormInput";
-import GoogleLogInButton from "../components/GoogleLogInButton";
-import GitHubLogInButton from "../components/GithubLogInButton";
-import { useAuth } from "../contexts/AuthProvider";
+import { logIn } from "../../api/functions/auth";
+import FormInput from "../../components/FormInput";
+import GoogleLogInButton from "../../components/GoogleLogInButton";
+import GitHubLogInButton from "../../components/GithubLogInButton";
+import { useAuth } from "../../contexts/AuthProvider";
 const styles = {};
 
 function LogInForm() {

@@ -3,9 +3,9 @@ import App from "./App";
 import GuestRoute from "./components/GuestRoute";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
-import SignUpForm from "./pages/SignUpForm";
-import LogInForm from "./pages/LogInForm";
-import GithubLogInPage from "./pages/GithubLogInPage";
+import SignUpForm from "./features/authentication/SignUpForm.jsx";
+import LogInForm from "./features/authentication/LogInForm.jsx";
+import GithubLogInPage from "./features/authentication/GithubLogInPage.jsx";
 
 import HomePage from "./pages/HomePage.jsx";
 import PostsFeed from "./features/postsFeed/PostsFeed.jsx";

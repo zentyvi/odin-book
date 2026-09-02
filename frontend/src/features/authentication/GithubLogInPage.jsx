@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router";
-import { githubLogIn } from "../api/functions/auth";
-import Loader from "../components/Loader";
-import { useAuth } from "../contexts/AuthProvider.jsx";
+import { githubLogIn } from "../../api/functions/auth.js";
+import Loader from "../../components/Loader.jsx";
+import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function GithubLogInPage() {
   const [params] = useSearchParams();

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { signUp } from "../api/functions/auth.js";
-import { useAuth } from "../contexts/AuthProvider.jsx";
-import FormInput from "../components/FormInput";
-import GoogleLogInButton from "../components/GoogleLogInButton.jsx";
-import GitHubLogInButton from "../components/GithubLogInButton.jsx";
+import { signUp } from "../../api/functions/auth.js";
+import { useAuth } from "../../contexts/AuthProvider.jsx";
+import FormInput from "../../components/FormInput.jsx";
+import GoogleLogInButton from "../../components/GoogleLogInButton.jsx";
+import GitHubLogInButton from "../../components/GithubLogInButton.jsx";
 import {
   validateFirstName,
   validateLastName,
   validateUsername,
   validatePassword,
-} from "../utilis/validators.js";
+} from "../../utilis/validators.js";
 const styles = {};
 
 function SignUpForm() {

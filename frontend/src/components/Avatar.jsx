@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { getRandomNumberFromString } from "../utilis/helpers.js";
 const styles = {};
 
 function Avatar({ user, alt, showStatus = false, className = "" }) {
+  const [errors, setErrors] = useState(null);
   // Safe fallback if user object is missing
   if (!user) {
     return (
@@ -28,11 +30,12 @@ function Avatar({ user, alt, showStatus = false, className = "" }) {
       className={`${styles["avatar"]} ${className}`}
       aria-label={`${displayName}'s avatar`}
     >
-      {user.avatarUrl ? (
+      {user.avatarUrl && !errors ? (
         <img
           src={user.avatarUrl}
           alt={alt || `${displayName}'s avatar`}
           className={styles["avatar__image"]}
+          onError={() => setErrors("FAILED TO LOAD AVATAR")}
         />
       ) : (
         <div

@@ -53,7 +53,7 @@ function Header() {
         </ul>
       </div>
       <div>
-        <Link to={`/users/${user?.username}`}>
+        <Link to={`/users/${user?.username}`} aria-label="To your profile">
           <Avatar user={user} showStatus={false} />
           <div>
             <span>{getFullName(user)}</span>

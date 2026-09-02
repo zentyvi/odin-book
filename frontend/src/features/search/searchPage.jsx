@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { searchUsers } from "../../api/functions/search.js";
-import UserResultRow from "./UserResultRow.jsx";
+import UserCard from "../../components/UserCard.jsx";
 
 import Loader from "../../components/Loader";
 const styles = {};
@@ -84,7 +84,7 @@ function SearchPage() {
           aria-orientation="vertical"
         >
           {users.map((u) => (
-            <UserResultRow key={u.id} user={u} />
+            <UserCard key={u.id} user={u} />
           ))}
         </ul>
       </div>

@@ -1,8 +1,8 @@
-import Avatar from "../../components/Avatar.jsx";
-import { useModal } from "../../contexts/ModalProvider.jsx";
-import { getFullName } from "../../utilis/helpers.js";
+import Avatar from "./Avatar.jsx";
+import { useModal } from "../contexts/ModalProvider.jsx";
+import { getFullName } from "../utilis/helpers.js";
 
-function UserResultRow({ user }) {
+function UserCard({ user }) {
   const { openModal } = useModal();
   const fullName = getFullName(user);
 
@@ -22,4 +22,4 @@ function UserResultRow({ user }) {
   );
 }
 
-export default UserResultRow;
+export default UserCard;

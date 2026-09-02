@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { getMyFriends } from "../../api/functions/users.js";
 import Loader from "../../components/Loader.jsx";
-import FriendCard from "./FriendCard.jsx";
-import { Link } from "react-router";
+import UserCard from "../../components/UserCard.jsx";
 
 function FriendsPage() {
   const { user, setUser, mergeFriends } = useAuth();
@@ -54,7 +54,7 @@ function FriendsPage() {
           friends?.length > 0 ? (
             <ul>
               {friends.map((f) => (
-                <FriendCard friend={f} key={f.id} />
+                <UserCard user={f} key={f.id} />
               ))}
             </ul>
           ) : (
