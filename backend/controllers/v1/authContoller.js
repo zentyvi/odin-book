@@ -24,6 +24,9 @@ async function $signUpPost(req, res, next) {
         lastName,
         username,
         password: hashedPassword,
+        settings: {
+          create: {},
+        },
       },
       select: {
         id: true,
@@ -118,6 +121,9 @@ async function googleLogInPost(req, res, next) {
         firstName: given_name,
         lastName: family_name,
         username,
+        settings: {
+          create: {},
+        },
       },
       select: {
         id: true,
@@ -193,6 +199,9 @@ async function githubLogInPost(req, res, next) {
         lastName,
         username: githubUser.login,
         avatarUrl: githubUser.avatar_url,
+        settings: {
+          create: {},
+        },
       },
       select: {
         id: true,

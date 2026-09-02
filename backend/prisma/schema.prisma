@@ -26,9 +26,32 @@ model User {
   friends       User[]    @relation("UserFriends")
   symFriends    User[]    @relation("UserFriends")
 
+  settings Settings?
+
   sentRequests     FriendRequest[] @relation("Sender")
   receivedRequests FriendRequest[] @relation("Receiver")
   createdAt        DateTime        @default(now())
+}
+
+enum UserType {
+  USERNAME
+  GOOGLE
+  GITHUB
+}
+
+model Settings {
+  id           String       @id @default(ulid())
+  userId       String       @unique
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  is24h        Boolean      @default(true)
+  whoCanTextMe WhoCanTextMe @default(EVERYONE)
+  theme        String       @default("DEFAULT")
+  updatedAt    DateTime     @updatedAt
+}
+
+enum WhoCanTextMe {
+  EVERYONE
+  FRIENDS
 }
 
 model FriendRequest {
@@ -41,12 +64,6 @@ model FriendRequest {
   receiver User @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@unique([senderId, receiverId])
-}
-
-enum UserType {
-  USERNAME
-  GOOGLE
-  GITHUB
 }
 
 model Post {

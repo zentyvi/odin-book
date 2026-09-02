@@ -6,12 +6,12 @@ import Avatar from "../../components/Avatar.jsx";
 import LikeButton from "../../components/LikeButton.jsx";
 import { useModal } from "../../contexts/ModalProvider.jsx";
 
-function PostCard({ post, is24h = true }) {
+function PostCard({ post }) {
   const author = post?.author;
   const isLiked = post?.likedBy?.length > 0;
   const likesNumber = post?._count?.likedBy;
   const commentsNumber = post?._count?.comments;
-  const { likePostInCache } = useData();
+  const { likePostInCache, settings } = useData();
   const { openModal } = useModal();
 
   const handleLike = async () => {
@@ -37,7 +37,7 @@ function PostCard({ post, is24h = true }) {
             >
               <span>{getFullName(author)}</span>
             </button>
-            <span>{getCalendarTime(post?.createdAt, is24h)}</span>
+            <span>{getCalendarTime(post?.createdAt, settings?.is24h)}</span>
           </div>
         </header>
         <main>

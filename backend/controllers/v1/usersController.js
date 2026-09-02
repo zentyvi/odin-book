@@ -22,6 +22,11 @@ async function $getMyInfo(req, res, next) {
         lastName: true,
         username: true,
         createdAt: true,
+        settings: {
+          select: {
+            updatedAt: true,
+          },
+        },
       },
     });
 
@@ -37,344 +42,26 @@ async function $getMyInfo(req, res, next) {
 
 const getMyInfo = [protectRoute, $getMyInfo];
 
-async function getUserPreview(req, res, next) {
-  try {
-    const { userId } = req.params;
-    const requestAuthorId = req?.user?.id;
-
-    const user = await prisma_client.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        avatarUrl: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        receivedRequests: {
-          where: {
-            senderId: requestAuthorId,
-          },
-          select: {
-            id: true,
-          },
-        },
-        friends: {
-          where: {
-            id: requestAuthorId,
-          },
-          select: {
-            id: true,
-          },
-        },
-        _count: {
-          select: {
-            comments: true,
-            posts: true,
-            friends: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    res.json(user);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function $friendRequestPost(req, res, next) {
-  try {
-    const senderId = req?.user?.id;
-    const receiverId = req?.params?.userId;
-
-    if (senderId === receiverId) {
-      return res
-        .status(400)
-        .json({ message: "Cannot send a friend request to yourself" });
-    }
-
-    const existingRequest = await prisma_client.friendRequest.findFirst({
-      where: {
-        senderId,
-        receiverId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (existingRequest) {
-      return res.status(400).json({ message: "Friend request already exists" });
-    }
-
-    await prisma_client.friendRequest.create({
-      data: {
-        senderId,
-        receiverId,
-      },
-    });
-
-    res.json({ message: "Succeed" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-const friendRequestPost = [protectRoute, $friendRequestPost];
-
-async function getUserProfile(req, res, next) {
-  try {
-    const requestedUser = req?.params?.userId;
-    const currentUser = req?.user;
-    const requestAuthorId = currentUser?.id;
-    const isMyProfile =
-      requestedUser === currentUser?.id ||
-      requestedUser === currentUser?.username;
-
-    let user = await prisma_client.user.findFirst({
-      where: {
-        OR: [{ id: requestedUser }, { username: requestedUser }],
-      },
-      select: {
-        id: true,
-        avatarUrl: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        receivedRequests: isMyProfile
-          ? {
-              where: {
-                receiverId: requestAuthorId,
-              },
-              select: {
-                id: true,
-                sender: {
-                  select: {
-                    id: true,
-                    avatarUrl: true,
-                    firstName: true,
-                    lastName: true,
-                    username: true,
-                  },
-                },
-              },
-            }
-          : {
-              where: {
-                receiver: {
-                  OR: [{ id: requestedUser }, { username: requestedUser }],
-                  NOT: { id: requestAuthorId },
-                },
-                senderId: requestAuthorId,
-              },
-              select: {
-                id: true,
-              },
-            },
-        friends: {
-          where: {
-            id: requestAuthorId,
-          },
-          select: {
-            id: true,
-          },
-        },
-        posts: {
-          include: {
-            author: {
-              select: {
-                id: true,
-                avatarUrl: true,
-                firstName: true,
-                lastName: true,
-                username: true,
-              },
-            },
-            _count: {
-              select: {
-                comments: true,
-                likedBy: true,
-              },
-            },
-            likedBy: {
-              select: {
-                id: true,
-              },
-              where: {
-                id: requestAuthorId,
-              },
-            },
-          },
-        },
-        comments: {
-          include: {
-            author: {
-              select: {
-                id: true,
-                avatarUrl: true,
-                firstName: true,
-                lastName: true,
-                username: true,
-              },
-            },
-            likedBy: {
-              where: {
-                id: requestAuthorId,
-              },
-              select: {
-                id: true,
-              },
-            },
-            _count: {
-              select: {
-                likedBy: true,
-              },
-            },
-          },
-        },
-        _count: {
-          select: {
-            friends: true,
-            posts: true,
-            comments: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    res.json(user);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function $handleRequestAction(req, res, next) {
+async function $getMySettings(req, res, next) {
   try {
     const userId = req?.user?.id;
-    const { requestId } = req.params;
-    const { action } = req.body;
-
-    const request = await prisma_client.friendRequest.delete({
+    const settings = await prisma_client.settings.findFirst({
       where: {
-        id: requestId,
-        receiverId: userId,
-      },
-      select: {
-        senderId: true,
+        userId,
       },
     });
 
-    if (!request) {
-      return res.status(404).json({ message: "Friend request not found" });
+    if (!settings) {
+      return res.status(404).json({ mesage: "Settings not found" });
     }
 
-    if (action === "ACCEPT") {
-      const reciver = await prisma_client.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          friends: {
-            connect: { id: request.senderId },
-          },
-        },
-        select: {
-          _count: {
-            select: { friends: true },
-          },
-        },
-      });
-      const sender = await prisma_client.user.update({
-        where: {
-          id: request.senderId,
-        },
-        data: {
-          friends: {
-            connect: { id: userId },
-          },
-        },
-      });
-      return res.json(reciver);
-    }
-
-    res.json({ message: "Succeed" });
+    res.json(settings);
   } catch (err) {
     next(err);
   }
 }
 
-const handleRequestAction = [protectRoute, $handleRequestAction];
-
-async function $deleteFriend(req, res, next) {
-  try {
-    const userId = req?.user?.id;
-    const { friendId } = req.params;
-
-    const existingFriends = await prisma_client.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        friends: {
-          where: {
-            id: friendId,
-          },
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-
-    if (existingFriends.friends.length === 0) {
-      return res.status(404).json({ message: "Friend not found" });
-    }
-
-    const user = await prisma_client.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        friends: {
-          disconnect: { id: friendId },
-        },
-      },
-      select: {
-        friends: {
-          where: { id: friendId },
-          select: { id: true },
-        },
-      },
-    });
-
-    await prisma_client.user.update({
-      where: {
-        id: friendId,
-      },
-      data: {
-        friends: {
-          disconnect: { id: userId },
-        },
-      },
-    });
-
-    res.json({ message: "Succeed" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-const deleteFriend = [protectRoute, $deleteFriend];
+const getMySettings = [protectRoute, $getMySettings];
 
 async function $getMyFriends(req, res, next) {
   try {
@@ -408,6 +95,35 @@ async function $getMyFriends(req, res, next) {
 }
 
 const getMyFriends = [protectRoute, $getMyFriends];
+
+async function $updateMySettings(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+    const { settings } = req.body;
+
+    const existingsSettings = await prisma_client.settings.update({
+      where: {
+        userId,
+      },
+      data: {
+        ...settings,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!existingsSettings) {
+      return res.status(404).json({ message: "Settings to update not found" });
+    }
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const updateMySettings = [protectRoute, $updateMySettings];
 
 async function $updateMyProfile(req, res, next) {
   try {
@@ -593,17 +309,358 @@ async function $deleteAvatar(req, res, next) {
 
 const deleteAvatar = [protectRoute, $deleteAvatar];
 
+async function getUserPreview(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const requestAuthorId = req?.user?.id;
+
+    const user = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        avatarUrl: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        receivedRequests: {
+          where: {
+            senderId: requestAuthorId,
+          },
+          select: {
+            id: true,
+          },
+        },
+        friends: {
+          where: {
+            id: requestAuthorId,
+          },
+          select: {
+            id: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            posts: true,
+            friends: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getUserProfile(req, res, next) {
+  try {
+    const requestedUser = req?.params?.userId;
+    const currentUser = req?.user;
+    const requestAuthorId = currentUser?.id;
+    const isMyProfile =
+      requestedUser === currentUser?.id ||
+      requestedUser === currentUser?.username;
+
+    let user = await prisma_client.user.findFirst({
+      where: {
+        OR: [{ id: requestedUser }, { username: requestedUser }],
+      },
+      select: {
+        id: true,
+        avatarUrl: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        receivedRequests: isMyProfile
+          ? {
+              where: {
+                receiverId: requestAuthorId,
+              },
+              select: {
+                id: true,
+                sender: {
+                  select: {
+                    id: true,
+                    avatarUrl: true,
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                  },
+                },
+              },
+            }
+          : {
+              where: {
+                receiver: {
+                  OR: [{ id: requestedUser }, { username: requestedUser }],
+                  NOT: { id: requestAuthorId },
+                },
+                senderId: requestAuthorId,
+              },
+              select: {
+                id: true,
+              },
+            },
+        friends: {
+          where: {
+            id: requestAuthorId,
+          },
+          select: {
+            id: true,
+          },
+        },
+        posts: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                avatarUrl: true,
+                firstName: true,
+                lastName: true,
+                username: true,
+              },
+            },
+            _count: {
+              select: {
+                comments: true,
+                likedBy: true,
+              },
+            },
+            likedBy: {
+              select: {
+                id: true,
+              },
+              where: {
+                id: requestAuthorId,
+              },
+            },
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                avatarUrl: true,
+                firstName: true,
+                lastName: true,
+                username: true,
+              },
+            },
+            likedBy: {
+              where: {
+                id: requestAuthorId,
+              },
+              select: {
+                id: true,
+              },
+            },
+            _count: {
+              select: {
+                likedBy: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            friends: true,
+            posts: true,
+            comments: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function $friendRequestPost(req, res, next) {
+  try {
+    const senderId = req?.user?.id;
+    const receiverId = req?.params?.userId;
+
+    if (senderId === receiverId) {
+      return res
+        .status(400)
+        .json({ message: "Cannot send a friend request to yourself" });
+    }
+
+    const existingRequest = await prisma_client.friendRequest.findFirst({
+      where: {
+        senderId,
+        receiverId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({ message: "Friend request already exists" });
+    }
+
+    await prisma_client.friendRequest.create({
+      data: {
+        senderId,
+        receiverId,
+      },
+    });
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const friendRequestPost = [protectRoute, $friendRequestPost];
+
+async function $handleRequestAction(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+    const { requestId } = req.params;
+    const { action } = req.body;
+
+    const request = await prisma_client.friendRequest.delete({
+      where: {
+        id: requestId,
+        receiverId: userId,
+      },
+      select: {
+        senderId: true,
+      },
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    if (action === "ACCEPT") {
+      const reciver = await prisma_client.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          friends: {
+            connect: { id: request.senderId },
+          },
+        },
+        select: {
+          _count: {
+            select: { friends: true },
+          },
+        },
+      });
+      const sender = await prisma_client.user.update({
+        where: {
+          id: request.senderId,
+        },
+        data: {
+          friends: {
+            connect: { id: userId },
+          },
+        },
+      });
+      return res.json(reciver);
+    }
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const handleRequestAction = [protectRoute, $handleRequestAction];
+
+async function $deleteFriend(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+    const { friendId } = req.params;
+
+    const existingFriends = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        friends: {
+          where: {
+            id: friendId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (existingFriends.friends.length === 0) {
+      return res.status(404).json({ message: "Friend not found" });
+    }
+
+    const user = await prisma_client.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        friends: {
+          disconnect: { id: friendId },
+        },
+      },
+      select: {
+        friends: {
+          where: { id: friendId },
+          select: { id: true },
+        },
+      },
+    });
+
+    await prisma_client.user.update({
+      where: {
+        id: friendId,
+      },
+      data: {
+        friends: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const deleteFriend = [protectRoute, $deleteFriend];
+
 const usersController = {
   getMyInfo,
-  getUserPreview,
-  friendRequestPost,
-  getUserProfile,
-  handleRequestAction,
-  deleteFriend,
+  getMySettings,
   getMyFriends,
+  updateMySettings,
   updateMyProfile,
   uploadAvatarPut,
   deleteAvatar,
+  getUserPreview,
+  getUserProfile,
+  friendRequestPost,
+  handleRequestAction,
+  deleteFriend,
 };
 
 export default usersController;

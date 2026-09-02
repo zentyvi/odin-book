@@ -11,7 +11,7 @@ const styles = {};
 
 function EditHeader() {
   const { user, setUser } = useAuth();
-  const { options } = useData();
+  const { settings } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [errors, setErrors] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(user?.avatarUrl || null);
@@ -162,7 +162,7 @@ function EditHeader() {
           ID: #{user?.id || "N/A"}
         </span>
         <span className={styles["profile-header__created"]}>
-          Member since: {getCalendarTime(user?.createdAt, options?.is24h)}
+          Member since: {getCalendarTime(user?.createdAt, settings?.is24h)}
         </span>
       </div>
     </div>

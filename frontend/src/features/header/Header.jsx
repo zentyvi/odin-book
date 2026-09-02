@@ -28,6 +28,12 @@ const links = [
     unactive: <i className="bi bi-stickies" />,
     active: <i className="bi bi-stickies-fill" />,
   },
+  {
+    path: "/settings",
+    title: "Settings",
+    unactive: <i className="bi bi-gear" />,
+    active: <i className="bi bi-gear-fill" />,
+  },
 ];
 
 function Header() {

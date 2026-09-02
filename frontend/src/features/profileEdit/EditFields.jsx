@@ -6,7 +6,7 @@ import {
   validateUsername,
   validatePassword,
 } from "../../utilis/validators.js";
-import { updateMyInfo } from "../../api/functions/users.js";
+import { updateMyProfile } from "../../api/functions/users.js";
 import EditModal from "./EditModal.jsx";
 import { capitalizeFirstLetter } from "../../utilis/helpers.js";
 const styles = {};
@@ -20,7 +20,7 @@ function EditFields() {
 
   const handleSaveField = async (data) => {
     try {
-      const result = await updateMyInfo(data);
+      const result = await updateMyProfile(data);
       if (result.errors) {
         setErrors(result.errors);
         return;

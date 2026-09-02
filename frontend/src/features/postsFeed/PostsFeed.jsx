@@ -3,7 +3,7 @@ import PostCard from "./PostCard.jsx";
 import { useData } from "../../contexts/DataProvider.jsx";
 
 function PostsFeed() {
-  const { posts, options } = useData();
+  const { posts } = useData();
   const loading = posts?.length === 0;
 
   if (loading) {
@@ -14,7 +14,7 @@ function PostsFeed() {
     <main>
       <ul>
         {posts.map((p) => (
-          <PostCard post={p} key={p.id} is24h={options?.is24h} />
+          <PostCard post={p} key={p.id} />
         ))}
       </ul>
     </main>

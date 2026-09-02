@@ -24,6 +24,9 @@ async function main() {
         lastName: faker.person.lastName(),
         username: faker.internet.username(),
         password: hashedPassword,
+        settings: {
+          create: {},
+        },
       },
       select: {
         id: true,

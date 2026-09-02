@@ -15,6 +15,7 @@ import UserProfilePage from "./features/profileView/UserProfilePage.jsx";
 import SinglePostPage from "./features/postView/SinglePostPage.jsx";
 import ProfileEditPage from "./features/profileEdit/ProfileEditPage.jsx";
 import SearchPage from "./features/search/searchPage.jsx";
+import SettingsPage from "./features/settings/SettingsPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
               { path: "/friends", element: <FriendsPage /> },
               { path: "/me/edit", element: <ProfileEditPage /> },
               { path: "/search/users", element: <SearchPage /> },
+              { path: "/settings", element: <SettingsPage /> },
             ],
           },
         ],

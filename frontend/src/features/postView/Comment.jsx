@@ -9,7 +9,7 @@ import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function Comment({ comment, postId }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { options, likeCommentInCache, deleteCommentFromCache } = useData();
+  const { settings, likeCommentInCache, deleteCommentFromCache } = useData();
   const { openModal } = useModal();
   const { user } = useAuth();
 
@@ -80,7 +80,7 @@ function Comment({ comment, postId }) {
             >
               <span>{getFullName(author)}</span>
             </button>
-            <span>{getCalendarTime(comment?.createdAt, options?.is24h)}</span>
+            <span>{getCalendarTime(comment?.createdAt, settings?.is24h)}</span>
           </div>
         </div>
         <LikeButton

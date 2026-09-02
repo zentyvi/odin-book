@@ -1,10 +1,24 @@
 import { createContext, useContext, useState } from "react";
+import { getMySettings, updateLocalSettings } from "../utilis/helpers.js";
+import { updateMySettings } from "../api/functions/users.js";
 
 const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
   const [posts, setPosts] = useState([]);
-  const [options, setOptions] = useState({});
+  const [settings, setSettings] = useState(getMySettings());
+
+  const updateSettings = async (newSettings) => {
+    try {
+      await updateMySettings(newSettings);
+      updateLocalSettings(newSettings);
+      setSettings((prev) => {
+        return { ...prev, ...newSettings };
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const mergePosts = (existingPosts, newPosts) => {
     const postsMap = new Map();
@@ -134,8 +148,8 @@ export function DataProvider({ children }) {
         likeCommentInCache,
         addCommentInCache,
         deleteCommentFromCache,
-        options,
-        setOptions,
+        settings,
+        updateSettings,
       }}
     >
       {children}

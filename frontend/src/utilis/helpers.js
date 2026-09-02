@@ -46,3 +46,16 @@ export function getRandomNumberFromString(string) {
   }, 0);
   return (r % 5) + 1;
 }
+
+export function getMySettings() {
+  const settings = JSON.parse(localStorage.getItem("settings"));
+  return settings || {};
+}
+
+export function updateLocalSettings(newSettings) {
+  const settings = JSON.parse(localStorage.getItem("settings")) || {};
+  localStorage.setItem(
+    "settings",
+    JSON.stringify({ ...settings, ...newSettings }),
+  );
+}

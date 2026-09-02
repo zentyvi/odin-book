@@ -18,7 +18,7 @@ import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function SinglePostPage() {
   const { postId } = useParams();
-  const { posts, likePostInCache, setPosts, mergePosts } = useData();
+  const { posts, likePostInCache, setPosts, mergePosts, settings } = useData();
   const { openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ function SinglePostPage() {
               >
                 <span>{getFullName(author)}</span>
               </button>
-              <span>{getCalendarTime(post.createdAt)}</span>
+              <span>{getCalendarTime(post.createdAt, settings?.is24h)}</span>
             </div>
             <div>
               <LikeButton
