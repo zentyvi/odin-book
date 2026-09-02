@@ -146,7 +146,8 @@ function EditModal({ field, onClose, onSave, errors, setErrors }) {
               {field.type === "password" && (
                 <button
                   type="button"
-                  aria-label="Show password"
+                  aria-label="Show passwords"
+                  aria-pressed={showPasswords}
                   onClick={() => {
                     setShowPasswords(!showPasswords);
                   }}
