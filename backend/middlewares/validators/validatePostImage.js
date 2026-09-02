@@ -1,10 +1,13 @@
-import avatarHandler from "../../utils/avatarHandler.js";
+import postImageHandler from "../../utils/postImageHandler.js";
 
-async function validateAvatar(req, res, next) {
+async function validatePostImage(req, res, next) {
   const errors = {};
 
   // Execute multer manually to intercept its errors directly
-  avatarHandler(req, res, (err) => {
+  postImageHandler(req, res, (err) => {
+    if (!req?.file) {
+      next();
+    }
     // Check if multer or fileFilter threw an error
     if (err) {
       let errorMessage = err.message;
@@ -14,13 +17,7 @@ async function validateAvatar(req, res, next) {
         errorMessage = "File size cannot exceed 3mb";
       }
 
-      errors.avatar = { msg: errorMessage };
-      return res.status(400).json({ errors });
-    }
-
-    // Check if the file wasn't uploaded at all
-    if (!req.file) {
-      errors.avatar = { msg: "No file has been provided" };
+      errors.postImage = { msg: errorMessage };
       return res.status(400).json({ errors });
     }
 
@@ -29,4 +26,4 @@ async function validateAvatar(req, res, next) {
   });
 }
 
-export default validateAvatar;
+export default validatePostImage;

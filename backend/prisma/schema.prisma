@@ -68,7 +68,8 @@ model FriendRequest {
 
 model Post {
   id        String    @id @default(uuid())
-  content   String
+  imageUrl  String?
+  content   String?
   author    User      @relation(name: "UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   comments  Comment[]

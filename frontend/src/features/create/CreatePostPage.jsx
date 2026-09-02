@@ -1,20 +1,28 @@
-import { useState } from "react";
-import FormInput from "../../components/FormInput.jsx";
+import { useRef, useState } from "react";
 import { createPost } from "../../api/functions/posts.js";
 import { useNavigate } from "react-router";
+import { validatePost } from "../../utilis/validators.js";
+import FormInput from "../../components/FormInput.jsx";
 
 function CreatePostPage() {
   const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);
   const [errors, setErrors] = useState(null);
   const navigate = useNavigate();
+  const fileInputRef = useRef();
+  const imagePreview = image ? URL.createObjectURL(image) : null;
 
   const fromatedContent = content?.trim();
-  const isDisabled = fromatedContent?.length === 0 || errors;
+  const isDisabled = (!fromatedContent && !image) || errors?.content;
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const result = await createPost(fromatedContent);
+      const formData = new FormData();
+      formData.append("postImage", image);
+      formData.append("content", fromatedContent);
+
+      const result = await createPost(formData);
       if (result?.errors) {
         setErrors(result.errors);
         return;
@@ -26,30 +34,19 @@ function CreatePostPage() {
     }
   };
 
-  const handleChange = (e) => {
-    const { value } = e.target;
-    setContent(value);
+  const handleFileChange = async (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    setImage(file);
+    setErrors((prev) => {
+      return { ...prev, postImage: null };
+    });
+  };
 
-    const formated = value.trim();
-    if (formated.length > 1000) {
-      setErrors((prev) => {
-        return {
-          ...prev,
-          content: { msg: "Content cannot exceed 1000 characters" },
-        };
-      });
-      return;
+  const handleTriggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
-    if (value.length > 0 && formated.length === 0) {
-      setErrors((prev) => {
-        return {
-          ...prev,
-          content: { msg: "Content cannot be blank" },
-        };
-      });
-      return;
-    }
-    setErrors(null);
   };
 
   return (
@@ -58,17 +55,54 @@ function CreatePostPage() {
         <h2>Create new post!</h2>
         <form onSubmit={handleSubmit}>
           <FormInput
-            isRequired={true}
             type="textarea"
             rows={30}
+            label="Content"
+            id="post-content"
             value={content}
-            onChange={handleChange}
+            onChange={(e) => validatePost(e, setContent, setErrors)}
             error={errors?.content}
           />
+          {imagePreview && (
+            <div>
+              <div>
+                <img src={imagePreview} alt="Preview image" />
+                <button
+                  aria-label="Remove attachment"
+                  onClick={() => setImage(null)}
+                >
+                  <i className="bi bi-x-lg" />
+                </button>
+              </div>
+              {errors?.postImage && (
+                <div>
+                  <span>{errors?.postImage?.msg}</span>
+                </div>
+              )}
+            </div>
+          )}
           <div>
-            <button disabled={isDisabled} type="submit">
-              Create
-            </button>
+            <div>
+              <button disabled={isDisabled} type="submit">
+                Create
+              </button>
+            </div>
+            <div>
+              <button
+                aria-label="Attach photo"
+                type="button"
+                onClick={handleTriggerFileInput}
+              >
+                <i className="bi bi-paperclip" />
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+            </div>
           </div>
         </form>
       </header>

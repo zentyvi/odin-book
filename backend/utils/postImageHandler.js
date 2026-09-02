@@ -1,8 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-const avatarUploader = multer({
-  limits: { fileSize: 3 * 1024 * 1024 }, // 3 mb
+const postImageHandler = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = [
@@ -24,6 +23,6 @@ const avatarUploader = multer({
 
     cb(new Error("Only (JPEG, PNG, WEBP, GIF) types are allowed"));
   },
-}).single("avatar");
+}).single("postImage");
 
-export default avatarUploader;
+export default postImageHandler;

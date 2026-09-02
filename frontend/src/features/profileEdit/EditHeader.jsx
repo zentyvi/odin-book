@@ -24,6 +24,7 @@ function EditHeader() {
       const formData = new FormData();
       formData.append("avatar", file);
       const result = await uploadAvatar(formData);
+
       if (result.errors) {
         setErrors(result.errors);
         return false;

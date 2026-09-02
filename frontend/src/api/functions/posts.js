@@ -78,7 +78,7 @@ async function newComment(postId, comment) {
   return result;
 }
 
-async function createPost(content) {
+async function createPost(formData) {
   const token = localStorage.getItem("token");
 
   const bearer = `Bearer ${token}`;
@@ -86,9 +86,8 @@ async function createPost(content) {
     method: "POST",
     headers: {
       authorization: bearer,
-      "Content-type": "application/json",
     },
-    body: JSON.stringify({ content }),
+    body: formData,
   });
 
   if (!response.ok && response.status !== 400) {

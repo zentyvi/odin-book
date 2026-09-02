@@ -79,6 +79,10 @@ export function DataProvider({ children }) {
     );
   };
 
+  const deletePostFromCache = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  };
+
   const likeCommentInCache = (updatedCommentData) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
@@ -145,6 +149,7 @@ export function DataProvider({ children }) {
         mergePosts,
         likePostInCache,
         updatePostInCache,
+        deletePostFromCache,
         likeCommentInCache,
         addCommentInCache,
         deleteCommentFromCache,

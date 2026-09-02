@@ -18,7 +18,14 @@ import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function SinglePostPage() {
   const { postId } = useParams();
-  const { posts, likePostInCache, setPosts, mergePosts, settings } = useData();
+  const {
+    posts,
+    likePostInCache,
+    deletePostFromCache,
+    setPosts,
+    mergePosts,
+    settings,
+  } = useData();
   const { openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -63,6 +70,7 @@ function SinglePostPage() {
         return;
       }
       await deletePost(postId);
+      deletePostFromCache(postId);
       navigate("/", { replace: true });
     } catch (err) {
       console.error(err);
@@ -97,45 +105,56 @@ function SinglePostPage() {
               </button>
               <span>{getCalendarTime(post.createdAt, settings?.is24h)}</span>
             </div>
+            {isMyPost && (
+              <div>
+                <button
+                  aria-label="Actions menu button"
+                  aria-expanded={isMenuOpen}
+                  aria-controls="post-actions-menu"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  <i className="bi bi-list" />
+                </button>
+                {isMenuOpen && (
+                  <div>
+                    <div>
+                      <ul>
+                        <li>
+                          <button
+                            aria-label="Delete post"
+                            onClick={handleDelete}
+                          >
+                            Delete
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </header>
+          <main>
+            {post?.content && (
+              <div>
+                <p>{post?.content}</p>
+              </div>
+            )}
+            {post?.imageUrl && (
+              <div>
+                <img src={post?.imageUrl} alt="Post image" />
+              </div>
+            )}
+          </main>
+          <footer>
             <div>
               <LikeButton
                 initialState={isLiked}
                 likesNumber={likesNumber}
                 onLike={handleLike}
               />
-              {isMyPost && (
-                <div>
-                  <button
-                    aria-label="Actions menu button"
-                    aria-expanded={isMenuOpen}
-                    aria-controls="post-actions-menu"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  >
-                    <i className="bi bi-list" />
-                  </button>
-                  {isMenuOpen && (
-                    <div>
-                      <div>
-                        <ul>
-                          <li>
-                            <button
-                              aria-label="Delete post"
-                              onClick={handleDelete}
-                            >
-                              Delete
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
-          </header>
-          <main>
-            <p>{post?.content}</p>
-          </main>
+          </footer>
         </div>
       </div>
       <PostComments comments={post?.comments} postId={postId} />

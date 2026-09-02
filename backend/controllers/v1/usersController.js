@@ -442,7 +442,11 @@ async function getUserProfile(req, res, next) {
           },
         },
         posts: {
-          include: {
+          select: {
+            id: true,
+            imageUrl: true,
+            content: true,
+            createdAt: true,
             author: {
               select: {
                 id: true,

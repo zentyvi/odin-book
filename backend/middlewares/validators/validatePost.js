@@ -3,8 +3,7 @@ import { body } from "express-validator";
 const validatePost = [
   body("content")
     .trim()
-    .notEmpty()
-    .withMessage("Content cannot be blank")
+    .optional()
     .isLength({ max: 1000 })
     .withMessage("Content cannot exceed 1000 characters"),
 ];

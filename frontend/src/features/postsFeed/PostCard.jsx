@@ -2,9 +2,9 @@ import { Link } from "react-router";
 import { getFullName, getCalendarTime } from "../../utilis/helpers.js";
 import { likePost } from "../../api/functions/posts.js";
 import { useData } from "../../contexts/DataProvider.jsx";
+import { useModal } from "../../contexts/ModalProvider.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import LikeButton from "../../components/LikeButton.jsx";
-import { useModal } from "../../contexts/ModalProvider.jsx";
 
 function PostCard({ post }) {
   const author = post?.author;
@@ -42,7 +42,16 @@ function PostCard({ post }) {
         </header>
         <main>
           <Link to={`/posts/${post.id}#`} aria-label="To post" state={post}>
-            <p>{post?.content}</p>
+            {post?.content && (
+              <div>
+                <p>{post?.content}</p>
+              </div>
+            )}
+            {post?.imageUrl && (
+              <div>
+                <img src={post?.imageUrl} alt="Post image" />
+              </div>
+            )}
           </Link>
         </main>
         <footer>

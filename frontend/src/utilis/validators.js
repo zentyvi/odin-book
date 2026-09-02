@@ -108,9 +108,30 @@ const validatePassword = (e, setValue, setErrors, field = "password") => {
   setErrors((prev) => ({ ...prev, [field]: null }));
 };
 
+const validatePost = (e, setValue, setErrors, field = "content") => {
+  const { value } = e.target;
+  setValue(value);
+
+  const formated = value.trim();
+  if (formated.length > 1000) {
+    setErrors((prev) => {
+      return {
+        ...prev,
+        [field]: { msg: "Content cannot exceed 1000 characters" },
+      };
+    });
+    return;
+  }
+
+  setErrors((prev) => {
+    return { ...prev, [field]: null };
+  });
+};
+
 export {
   validateFirstName,
   validateLastName,
   validateUsername,
   validatePassword,
+  validatePost,
 };

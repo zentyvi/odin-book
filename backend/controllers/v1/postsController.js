@@ -3,19 +3,17 @@ import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
 import validateComment from "../../middlewares/validators/validateComment.js";
 import validatePost from "../../middlewares/validators/validatePost.js";
+import validatePostImage from "../../middlewares/validators/validatePostImage.js";
+import cloudinaryPublic from "../../utils/cloudinary.js";
 
 async function getFeed(req, res, next) {
   try {
     const userId = req?.user?.id;
 
     const posts = await prisma_client.post.findMany({
-      where: {
-        NOT: {
-          authorId: userId,
-        },
-      },
       select: {
         id: true,
+        imageUrl: true,
         content: true,
         createdAt: true,
         author: {
@@ -61,6 +59,7 @@ async function getSinglePost(req, res, next) {
       },
       select: {
         id: true,
+        imageUrl: true,
         content: true,
         createdAt: true,
         author: {
@@ -244,10 +243,24 @@ async function $createPost(req, res, next) {
     const userId = req?.user?.id;
     const content = req.body?.content?.trim();
 
+    let imageUrl = null;
+    const file = req?.file;
+    if (file) {
+      const fileString = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+      const cloudinaryResponse = await cloudinaryPublic.uploader.upload(
+        fileString,
+        {
+          resource_type: "image",
+        },
+      );
+      imageUrl = cloudinaryResponse.secure_url;
+    }
+
     const post = await prisma_client.post.create({
       data: {
-        content,
+        content: content ? content : null,
         authorId: userId,
+        imageUrl,
       },
       select: {
         id: true,
@@ -260,7 +273,7 @@ async function $createPost(req, res, next) {
   }
 }
 
-const createPost = [protectRoute, validatePost, $createPost];
+const createPost = [protectRoute, validatePost, validatePostImage, $createPost];
 
 async function $deletePost(req, res, next) {
   try {
@@ -273,12 +286,28 @@ async function $deletePost(req, res, next) {
         authorId: userId,
       },
       select: {
-        id: true,
+        imageUrl: true,
       },
     });
 
     if (!post) {
       return res.status(404).json({ message: "Not found" });
+    }
+
+    if (post.imageUrl) {
+      const url = post.imageUrl;
+      const splittedUrl = url.split("/");
+      const lastSegment = splittedUrl[splittedUrl.length - 1];
+      const publicId = lastSegment.split(".")[0];
+
+      const cloudinaryResponse =
+        await cloudinaryPublic.uploader.destroy(publicId);
+
+      if (cloudinaryResponse.result !== "ok") {
+        throw new Error(
+          `Cloudinary deletion failed: ${cloudinaryResponse.result}`,
+        );
+      }
     }
 
     res.json({ message: "Succeed" });
