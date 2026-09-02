@@ -360,6 +360,30 @@ async function getUserPreview(req, res, next) {
   }
 }
 
+async function $deleteMyProfile(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+    const user = await prisma_client.user.delete({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Not found user to delete" });
+    }
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const deleteMyProfile = [protectRoute, $deleteMyProfile];
+
 async function getUserProfile(req, res, next) {
   try {
     const requestedUser = req?.params?.userId;
@@ -656,6 +680,7 @@ const usersController = {
   updateMyProfile,
   uploadAvatarPut,
   deleteAvatar,
+  deleteMyProfile,
   getUserPreview,
   getUserProfile,
   friendRequestPost,

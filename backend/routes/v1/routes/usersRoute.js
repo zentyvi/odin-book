@@ -10,6 +10,7 @@ usersRoute.put("/me/settings", usersController.updateMySettings);
 usersRoute.patch("/me", usersController.updateMyProfile);
 usersRoute.put("/me/avatar", usersController.uploadAvatarPut);
 usersRoute.delete("/me/avatar", usersController.deleteAvatar);
+usersRoute.delete("/me", usersController.deleteMyProfile);
 usersRoute.get("/:userId/preview", usersController.getUserPreview);
 usersRoute.get("/:userId", usersController.getUserProfile);
 usersRoute.post("/:userId/friend", usersController.friendRequestPost);

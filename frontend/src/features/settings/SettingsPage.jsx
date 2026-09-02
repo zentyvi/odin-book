@@ -5,6 +5,7 @@ import { updateLocalSettings } from "../../utilis/helpers.js";
 import TimeAndFormat from "./sections/TimeAndFormat.jsx";
 import PrivacyAndSecurity from "./sections/PrivacyAndSecurity.jsx";
 import Appearance from "./sections/Appearance.jsx";
+import AccountActions from "./sections/AccountActions.jsx";
 
 function SettingsPage() {
   const { isAuthenticated } = useAuth();
@@ -37,13 +38,18 @@ function SettingsPage() {
       </header>
       <div>
         <div>
-          <TimeAndFormat updateField={updateField} />
-          <PrivacyAndSecurity updateField={updateField} />
           <Appearance updateField={updateField} />
+          <TimeAndFormat updateField={updateField} />
+          {isAuthenticated && <PrivacyAndSecurity updateField={updateField} />}
         </div>
         <div>
           <button onClick={handleSave}>Save</button>
         </div>
+        {isAuthenticated && (
+          <div>
+            <AccountActions />
+          </div>
+        )}
       </div>
     </main>
   );

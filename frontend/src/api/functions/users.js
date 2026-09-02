@@ -1,23 +1,5 @@
 import { api_url } from "../config.js";
 
-async function $updateLocalSettings() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
-  const response = await fetch(`${api_url}/users/me/settings`, {
-    headers: {
-      authorization: bearer,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch settings");
-  }
-
-  const result = await response.json();
-  localStorage.setItem("settings", JSON.stringify(result));
-  return result;
-}
-
 async function getMyInfo() {
   const token = localStorage.getItem("token");
   const bearer = `Bearer ${token}`;
@@ -32,10 +14,7 @@ async function getMyInfo() {
   }
 
   const result = await response.json();
-  const settings = JSON.parse(localStorage.getItem("settings"));
-  if (!settings || result?.settings?.updatedAt !== settings?.updatedAt) {
-    $updateLocalSettings();
-  }
+
   return result;
 }
 
@@ -50,6 +29,23 @@ async function getMyFriends() {
 
   if (!response.ok) {
     throw new Error("Failed to fetch friends");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+async function getMySettings() {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me/settings`, {
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch settings");
   }
 
   const result = await response.json();
@@ -127,6 +123,24 @@ async function deleteAvatar() {
 
   if (!response.ok) {
     throw new Error("Failed to delete avatar");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+async function deleteMyProfile() {
+  const token = localStorage.getItem("token");
+  const bearer = `Bearer ${token}`;
+  const response = await fetch(`${api_url}/users/me`, {
+    method: "DELETE",
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete user");
   }
 
   const result = await response.json();
@@ -226,10 +240,12 @@ async function deleteFriend(friendId) {
 export {
   getMyInfo,
   getMyFriends,
+  getMySettings,
   updateMySettings,
   updateMyProfile,
   uploadAvatar,
   deleteAvatar,
+  deleteMyProfile,
   getUserPreview,
   getUserProfile,
   createFriendRequest,

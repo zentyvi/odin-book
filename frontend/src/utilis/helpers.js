@@ -47,7 +47,7 @@ export function getRandomNumberFromString(string) {
   return (r % 5) + 1;
 }
 
-export function getMySettings() {
+export function getMyLocalSettings() {
   const settings = JSON.parse(localStorage.getItem("settings"));
   return settings || {};
 }

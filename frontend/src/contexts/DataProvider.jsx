@@ -1,12 +1,12 @@
 import { createContext, useContext, useState } from "react";
-import { getMySettings, updateLocalSettings } from "../utilis/helpers.js";
+import { getMyLocalSettings, updateLocalSettings } from "../utilis/helpers.js";
 import { updateMySettings } from "../api/functions/users.js";
 
 const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
   const [posts, setPosts] = useState([]);
-  const [settings, setSettings] = useState(getMySettings());
+  const [settings, setSettings] = useState(getMyLocalSettings());
 
   const updateSettings = async (newSettings) => {
     try {
@@ -149,6 +149,7 @@ export function DataProvider({ children }) {
         addCommentInCache,
         deleteCommentFromCache,
         settings,
+        setSettings,
         updateSettings,
       }}
     >

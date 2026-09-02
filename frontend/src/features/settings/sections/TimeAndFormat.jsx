@@ -1,5 +1,5 @@
 import { useData } from "../../../contexts/DataProvider.jsx";
-import SettingsSection from "./SettingsSection.jsx";
+import SettingsSection from "../SettingsSection.jsx";
 
 function TimeAndFormat({ updateField }) {
   const { settings } = useData();

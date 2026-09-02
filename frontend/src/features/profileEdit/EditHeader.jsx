@@ -14,7 +14,7 @@ function EditHeader() {
   const { settings } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [errors, setErrors] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(user?.avatarUrl || null);
+  const previewUrl = user?.avatarUrl || null;
 
   const fileInputRef = useRef(null);
   const gradientId = user.name ? getRandomNumberFromString(user.name) : 1;
@@ -30,7 +30,6 @@ function EditHeader() {
       }
       const newAvatar = result.avatarUrl;
       setUser((prev) => ({ ...prev, avatarUrl: newAvatar }));
-      setPreviewUrl(newAvatar);
       setErrors(null);
       return true;
     } catch (err) {
@@ -43,7 +42,6 @@ function EditHeader() {
     try {
       await deleteAvatar();
       setUser((prev) => ({ ...prev, avatarUrl: null }));
-      setPreviewUrl(null);
       setIsMenuOpen(false);
     } catch (err) {
       console.error("Failed to delete avatar:", err);

@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
-import { getMyInfo } from "../api/functions/users.js";
+import { getMyInfo, getMySettings } from "../api/functions/users.js";
 import { useAuth } from "../contexts/AuthProvider.jsx";
 import { useData } from "../contexts/DataProvider.jsx";
 import { getFeed } from "../api/functions/posts.js";
 import Loader from "../components/Loader";
 import Header from "../features/header/Header.jsx";
+import { getMyLocalSettings, updateLocalSettings } from "../utilis/helpers.js";
 
 function HomePage() {
   const { user, setUser, isAuthenticated } = useAuth();
-  const { setPosts, posts, mergePosts } = useData();
+  const { setPosts, posts, mergePosts, setSettings } = useData();
   const [loading, setLoading] = useState(
     (isAuthenticated && !user) || posts?.length === 0,
   );
@@ -19,6 +20,15 @@ function HomePage() {
     const main = async () => {
       try {
         const result = await getMyInfo();
+        const localSettings = getMyLocalSettings();
+        if (
+          !localSettings ||
+          result?.settings?.updatedAt !== localSettings?.updatedAt
+        ) {
+          const newSettings = await getMySettings();
+          updateLocalSettings(newSettings);
+          setSettings(newSettings);
+        }
         setUser(result);
       } catch (err) {
         console.error(err);
