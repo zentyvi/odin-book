@@ -7,10 +7,10 @@ import {
 } from "../../api/functions/users.js";
 import { getFullName } from "../../utilis/helpers.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
+import { useModal } from "../../contexts/ModalProvider.jsx";
 import Loader from "../../components/Loader.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import UserProfileItems from "./UserProfileItems.jsx";
-import { useModal } from "../../contexts/ModalProvider.jsx";
 
 function UserProfilePage() {
   const location = useLocation();
@@ -21,6 +21,8 @@ function UserProfilePage() {
   const { sendNotification } = useModal();
   const {
     user: currentUser,
+    setUser: setCurrentUser,
+    updateFriendRequests,
     removeFriendFromCache,
     isAuthenticated,
   } = useAuth();
@@ -35,6 +37,7 @@ function UserProfilePage() {
   const requestButtonRef = useRef();
 
   const count = user?._count;
+  const friendRequestsNumber = currentUser?.receivedRequests?.length;
   let items;
   switch (selectedSection) {
     case "POSTS":
@@ -61,6 +64,10 @@ function UserProfilePage() {
       try {
         setSelectedSection("POSTS");
         const freshData = await getUserProfile(username);
+        if (isMyProfile) {
+          setCurrentUser(freshData);
+          updateFriendRequests(freshData?.receivedRequests || []);
+        }
         setUser(freshData);
       } catch (err) {
         console.error(err);
@@ -70,11 +77,13 @@ function UserProfilePage() {
     };
 
     fetchUserData();
+    // eslint-disable-next-line
   }, [username]);
 
   const handleFriendRequest = async () => {
+    const { current: button } = requestButtonRef;
+    const lastContent = button.textContent;
     try {
-      const { current: button } = requestButtonRef;
       if (!isAuthenticated) {
         sendNotification(
           "Error",
@@ -92,11 +101,19 @@ function UserProfilePage() {
       await createFriendRequest(user?.id);
       button.textContent = "Sent!";
     } catch (err) {
+      button.textContent = "Error has occured";
+      setTimeout(() => {
+        button.textContent = lastContent;
+        button.disabled = false;
+      }, 3000);
       console.error(err);
     }
   };
 
   const handleDeleteFriend = async () => {
+    if (!confirm("Are you sure that you want to delete this friend&")) {
+      return;
+    }
     const { current: button } = requestButtonRef;
     const lastContent = button.textContent;
     try {
@@ -220,6 +237,11 @@ function UserProfilePage() {
                 <button onClick={() => setSelectedSection("REQUESTS")}>
                   Friend requests
                 </button>
+                {friendRequestsNumber > 0 && (
+                  <span aria-label="Received friend requests number">
+                    {friendRequestsNumber}
+                  </span>
+                )}
               </li>
             )}
           </ul>

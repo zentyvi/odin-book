@@ -4,13 +4,17 @@ import { getMyInfo, getMySettings } from "../api/functions/users.js";
 import { useAuth } from "../contexts/AuthProvider.jsx";
 import { useData } from "../contexts/DataProvider.jsx";
 import { getFeed } from "../api/functions/posts.js";
-import Loader from "../components/Loader";
+import {
+  getMyLocalSettings,
+  updateLocalSettings,
+  mergeData,
+} from "../utilis/helpers.js";
 import Header from "../features/header/Header.jsx";
-import { getMyLocalSettings, updateLocalSettings } from "../utilis/helpers.js";
+import Loader from "../components/Loader";
 
 function HomePage() {
   const { user, setUser, guestMode, isAuthenticated } = useAuth();
-  const { setPosts, posts, mergePosts, setSettings } = useData();
+  const { setPosts, posts, setSettings } = useData();
 
   const loading = (!guestMode && !user) || posts?.length === 0;
 
@@ -41,7 +45,7 @@ function HomePage() {
     const main = async () => {
       try {
         const feed = await getFeed();
-        setPosts((prevPosts) => mergePosts(prevPosts, feed));
+        setPosts((prevPosts) => mergeData(prevPosts, feed));
       } catch (err) {
         console.error(err);
       }

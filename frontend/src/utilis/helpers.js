@@ -23,6 +23,7 @@ export function getCalendarTime(date, is24h = true) {
 }
 
 export function formatNumber(number) {
+  number = Number(number);
   let formatedNumber = number;
   if (number > 1_000_000) {
     formatedNumber = `${(number / 1_000_000).toFixed(1)}M`;
@@ -53,9 +54,45 @@ export function getMyLocalSettings() {
 }
 
 export function updateLocalSettings(newSettings) {
+  if (typeof newSettings !== "object") {
+    throw new Error(
+      `Settings to update must be object, recived: ${typeof newSettings}`,
+    );
+  }
   const settings = JSON.parse(localStorage.getItem("settings")) || {};
   localStorage.setItem(
     "settings",
     JSON.stringify({ ...settings, ...newSettings }),
   );
 }
+
+export const mergeData = (oldData, newData) => {
+  if (!Array.isArray(oldData) || !Array.isArray(newData)) {
+    throw new Error(
+      `Both arguments must be arrays, recived: ${typeof oldData} and ${typeof newData}.`,
+    );
+  }
+  const dataMap = new Map();
+
+  oldData.forEach((oldItem) => dataMap.set(oldItem.id, oldItem));
+
+  newData.forEach((newItem) => {
+    const existing = dataMap.get(newItem.id);
+
+    if (existing) {
+      dataMap.set(newItem.id, { ...existing, ...newItem });
+    } else {
+      dataMap.set(newItem.id, newItem);
+    }
+  });
+
+  return Array.from(dataMap.values());
+};
+
+export const filterData = (array, id) => {
+  if (!Array.isArray(array)) {
+    throw new Error(`Array to filter is ${typeof array}, must be Array`);
+  }
+
+  return array.filter((i) => i?.id !== id);
+};

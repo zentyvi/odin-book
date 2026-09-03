@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { getMyFriends } from "../../api/functions/users.js";
+import { mergeData } from "../../utilis/helpers.js";
 import Loader from "../../components/Loader.jsx";
 import UserCard from "../../components/UserCard.jsx";
 
 function FriendsPage() {
-  const { user, setUser, mergeFriends } = useAuth();
+  const { user, setUser } = useAuth();
   const friends = user?.friends;
   const [loading, setLoading] = useState(user && friends === undefined);
 
@@ -17,7 +18,7 @@ function FriendsPage() {
         setUser((prev) => {
           return {
             ...prev,
-            friends: mergeFriends(prev?.friends || [], freshFriends),
+            friends: mergeData(prev?.friends || [], freshFriends),
           };
         });
       } catch (err) {
@@ -42,7 +43,7 @@ function FriendsPage() {
       <header>
         <div>
           <h2>Your friends</h2>
-          {friends?.length !== undefined && (
+          {friends?.length > 0 && (
             <span>
               {friends.length} {friends.length === 1 ? "Friend" : "Friends"}
             </span>

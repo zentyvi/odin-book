@@ -6,26 +6,24 @@ import {
   getSinglePost,
   likePost,
 } from "../../api/functions/posts.js";
-import { getCalendarTime, getFullName } from "../../utilis/helpers.js";
+import {
+  getCalendarTime,
+  getFullName,
+  mergeData,
+} from "../../utilis/helpers.js";
 import { useData } from "../../contexts/DataProvider.jsx";
 import { useModal } from "../../contexts/ModalProvider.jsx";
+import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 import Loader from "../../components/Loader.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import LikeButton from "../../components/LikeButton.jsx";
 import PostComments from "./PostComments.jsx";
-import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function SinglePostPage() {
   const { postId } = useParams();
-  const {
-    posts,
-    likePostInCache,
-    deletePostFromCache,
-    setPosts,
-    mergePosts,
-    settings,
-  } = useData();
+  const { posts, likePostInCache, deletePostFromCache, setPosts, settings } =
+    useData();
   const { openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -45,7 +43,7 @@ function SinglePostPage() {
       try {
         const freshPost = await getSinglePost(postId);
 
-        setPosts((prevPosts) => mergePosts(prevPosts, [freshPost]));
+        setPosts((prevPosts) => mergeData(prevPosts, [freshPost]));
       } catch (err) {
         console.error(err);
       } finally {

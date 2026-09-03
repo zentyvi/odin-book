@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { filterData } from "../utilis/helpers.js";
 
 const ModalContext = createContext();
 
@@ -20,8 +21,8 @@ export function ModalProvider({ children }) {
     return id;
   };
 
-  const removeNotification = (id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const removeNotification = (idToRemove) => {
+    setNotifications((prev) => filterData(prev, idToRemove));
   };
 
   const openModal = (type, data = null) => {

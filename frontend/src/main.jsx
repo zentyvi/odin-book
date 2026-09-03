@@ -13,14 +13,14 @@ const root = createRoot(document.getElementById("root"));
 
 root.render(
   <StrictMode>
-    <DataProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <DataProvider>
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <ModalProvider>
             <RouterProvider router={router} />
           </ModalProvider>
         </GoogleOAuthProvider>
-      </AuthProvider>
-    </DataProvider>
+      </DataProvider>
+    </AuthProvider>
   </StrictMode>,
 );

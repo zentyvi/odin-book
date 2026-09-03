@@ -53,8 +53,9 @@ function UserProfileModal({ data, closeModal }) {
   }, [data]);
 
   const handleFriendRequest = async () => {
+    const { current: button } = requestButtonRef;
+    const lastContent = button.textContent;
     try {
-      const { current: button } = requestButtonRef;
       if (!isAuthenticated) {
         sendNotification(
           "Error",
@@ -72,11 +73,19 @@ function UserProfileModal({ data, closeModal }) {
       await createFriendRequest(user?.id);
       button.textContent = "Sent!";
     } catch (err) {
+      button.textContent = "Error has occured";
+      setTimeout(() => {
+        button.textContent = lastContent;
+        button.disabled = false;
+      }, 3000);
       console.error(err);
     }
   };
 
   const handleDeleteFriend = async () => {
+    if (!confirm("Are you sure that you want to delete this friend&")) {
+      return;
+    }
     const button = requestButtonRef.current;
     const lastContent = button.textContent;
     try {
@@ -109,6 +118,7 @@ function UserProfileModal({ data, closeModal }) {
           aria-label={`To ${fullName}'s profile`}
           to={`/users/${user?.username}`}
           onClick={() => closeModal()}
+          state={user}
         >
           <Avatar user={user} />
         </Link>
@@ -172,6 +182,7 @@ function UserProfileModal({ data, closeModal }) {
                   aria-label={`To ${fullName}'s profile`}
                   to={`/users/${user?.username}`}
                   onClick={() => closeModal()}
+                  state={user}
                 >
                   To profile
                 </Link>

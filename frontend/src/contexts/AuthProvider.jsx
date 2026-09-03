@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { filterData, mergeData } from "../utilis/helpers.js";
 
 const AuthContext = createContext(null);
 
@@ -15,48 +16,60 @@ export function AuthProvider({ children }) {
   };
 
   const login = (newToken, userData = null) => {
+    localStorage.removeItem("mode");
     localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
     setGuestMode(false);
-    localStorage.removeItem("mode");
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("settings");
     setToken(null);
     setUser(null);
   };
 
-  const mergeFriends = (existingFriends, newFriends) => {
-    const friendsMap = new Map();
-
-    existingFriends.forEach((f) => friendsMap.set(f.id, f));
-
-    newFriends.forEach((newFriend) => {
-      const existing = friendsMap.get(newFriend.id);
-
-      if (existing) {
-        friendsMap.set(newFriend.id, { ...existing, ...newFriend });
-      } else {
-        friendsMap.set(newFriend.id, newFriend);
-      }
+  const removeFromCache = (field, idToRemove) => {
+    if (!user) {
+      return;
+    }
+    const oldData = user[field] || [];
+    if (oldData?.length === 0) {
+      return;
+    }
+    setUser((prev) => {
+      return {
+        ...prev,
+        [field]: filterData(oldData, idToRemove),
+      };
     });
-
-    return Array.from(friendsMap.values());
   };
 
   const removeFriendFromCache = (friendId) => {
-    if (!user) return;
-    const friends = user?.friends || [];
+    removeFromCache("friends", friendId);
+  };
+
+  const removeFriendReqestFromCache = (requestId) => {
+    removeFromCache("receivedRequests", requestId);
+  };
+
+  const updateFriendRequests = (newRequests) => {
     setUser((prev) => {
-      return { ...prev, friends: friends.filter((f) => f.id !== friendId) };
+      const oldRequests = prev?.receivedRequests || [];
+      return {
+        ...prev,
+        receivedRequests: mergeData(oldRequests, newRequests),
+      };
     });
   };
 
   return (
     <AuthContext.Provider
       value={{
+        isAuthenticated: !!token,
+        login,
+        logout,
         guestMode,
         setGuestMode,
         continueAsGuest,
@@ -64,11 +77,10 @@ export function AuthProvider({ children }) {
         setToken,
         user,
         setUser,
-        mergeFriends,
+        removeFromCache,
         removeFriendFromCache,
-        isAuthenticated: !!token,
-        login,
-        logout,
+        removeFriendReqestFromCache,
+        updateFriendRequests,
       }}
     >
       {children}

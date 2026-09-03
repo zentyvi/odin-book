@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useData } from "../../contexts/DataProvider.jsx";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
-import { updateLocalSettings } from "../../utilis/helpers.js";
 import TimeAndFormat from "./sections/TimeAndFormat.jsx";
 import PrivacyAndSecurity from "./sections/PrivacyAndSecurity.jsx";
 import Appearance from "./sections/Appearance.jsx";
@@ -14,10 +13,7 @@ function SettingsPage() {
 
   const handleSave = async () => {
     try {
-      if (isAuthenticated) {
-        await updateSettings(settingsToUpdate);
-      }
-      updateLocalSettings(settingsToUpdate);
+      await updateSettings(settingsToUpdate);
     } catch (err) {
       console.error(err);
     }

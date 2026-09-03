@@ -27,6 +27,11 @@ async function $getMyInfo(req, res, next) {
             updatedAt: true,
           },
         },
+        receivedRequests: {
+          select: {
+            id: true,
+          }
+        }
       },
     });
 

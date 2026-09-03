@@ -41,6 +41,8 @@ function Header() {
   const currentPath = location.pathname;
   const { user, isAuthenticated } = useAuth();
 
+  const friendRequestsNumber = user?.receivedRequests?.length;
+
   return (
     <header>
       <div>
@@ -59,8 +61,19 @@ function Header() {
       </div>
       <div>
         {isAuthenticated && user ? (
-          <Link to={`/users/${user?.username}`} aria-label="To your profile">
-            <Avatar user={user} showStatus={false} />
+          <Link
+            to={`/users/${user?.username}`}
+            aria-label="To your profile"
+            state={user}
+          >
+            <div>
+              <Avatar user={user} showStatus={false} />
+              {friendRequestsNumber > 0 && (
+                <span aria-label="Received friend requests number">
+                  {friendRequestsNumber}
+                </span>
+              )}
+            </div>
             <div>
               <span>{getFullName(user)}</span>
             </div>

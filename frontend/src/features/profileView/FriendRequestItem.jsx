@@ -2,8 +2,10 @@ import { useModal } from "../../contexts/ModalProvider.jsx";
 import { getFullName } from "../../utilis/helpers.js";
 import { handleRequestAction } from "../../api/functions/users.js";
 import Avatar from "../../components/Avatar.jsx";
+import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function FriendRequestItem({ request, setUser }) {
+  const { removeFriendReqestFromCache } = useAuth();
   const { openModal } = useModal();
   const sender = request?.sender;
   const fullName = getFullName(sender);
@@ -15,6 +17,7 @@ function FriendRequestItem({ request, setUser }) {
   const handleAction = async (action) => {
     try {
       const result = await handleRequestAction(request?.id, action);
+      removeFriendReqestFromCache(request?.id);
       setUser((prev) => {
         return {
           ...prev,

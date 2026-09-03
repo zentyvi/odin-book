@@ -1,16 +1,24 @@
 import { createContext, useContext, useState } from "react";
-import { getMyLocalSettings, updateLocalSettings } from "../utilis/helpers.js";
+import {
+  filterData,
+  getMyLocalSettings,
+  updateLocalSettings,
+} from "../utilis/helpers.js";
 import { updateMySettings } from "../api/functions/users.js";
+import { useAuth } from "./AuthProvider.jsx";
 
 const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
   const [posts, setPosts] = useState([]);
   const [settings, setSettings] = useState(getMyLocalSettings());
+  const { isAuthenticated } = useAuth();
 
   const updateSettings = async (newSettings) => {
     try {
-      await updateMySettings(newSettings);
+      if (isAuthenticated) {
+        await updateMySettings(newSettings);
+      }
       updateLocalSettings(newSettings);
       setSettings((prev) => {
         return { ...prev, ...newSettings };
@@ -18,36 +26,6 @@ export function DataProvider({ children }) {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  const mergePosts = (existingPosts, newPosts) => {
-    const postsMap = new Map();
-
-    existingPosts.forEach((post) => {
-      postsMap.set(post.id, post);
-    });
-
-    newPosts.forEach((newPost) => {
-      const id = newPost.id;
-      const existing = postsMap.get(id);
-
-      if (existing) {
-        const hasMoreComments =
-          (existing.comments?.length || 0) > (newPost.comments?.length || 0);
-
-        postsMap.set(id, {
-          ...existing,
-          ...newPost,
-          comments: hasMoreComments
-            ? existing.comments
-            : newPost.comments || existing.comments,
-        });
-      } else {
-        postsMap.set(id, newPost);
-      }
-    });
-
-    return Array.from(postsMap.values());
   };
 
   const likePostInCache = (updatedPostData) => {
@@ -80,7 +58,7 @@ export function DataProvider({ children }) {
   };
 
   const deletePostFromCache = (postId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+    setPosts((prevPosts) => filterData(prevPosts, postId));
   };
 
   const likeCommentInCache = (updatedCommentData) => {
@@ -129,11 +107,11 @@ export function DataProvider({ children }) {
   const deleteCommentFromCache = (postId, commentId) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
+        const comments = post?.comments || [];
         if (post.id === postId) {
-          if (typeof post.comments === "undefined") return;
           return {
             ...post,
-            comments: post?.comments?.filter((c) => c.id !== commentId),
+            comments: filterData(comments, commentId),
           };
         }
         return post;
@@ -145,17 +123,16 @@ export function DataProvider({ children }) {
     <DataContext.Provider
       value={{
         posts,
+        settings,
+        setSettings,
+        updateSettings,
         setPosts,
-        mergePosts,
         likePostInCache,
         updatePostInCache,
         deletePostFromCache,
         likeCommentInCache,
         addCommentInCache,
         deleteCommentFromCache,
-        settings,
-        setSettings,
-        updateSettings,
       }}
     >
       {children}
