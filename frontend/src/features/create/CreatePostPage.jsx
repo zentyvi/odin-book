@@ -1,9 +1,11 @@
 import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import CreatePostForm from "./CreatePostForm.jsx";
+import { useTitle } from "../../utilis/helpers.js";
 
 function CreatePostPage() {
   const { isAuthenticated } = useAuth();
+  useTitle("Create post");
 
   return (
     <main>

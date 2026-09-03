@@ -3,12 +3,14 @@ import { searchUsers } from "../../api/functions/search.js";
 import UserCard from "../../components/UserCard.jsx";
 
 import Loader from "../../components/Loader";
+import { useTitle } from "../../utilis/helpers.js";
 const styles = {};
 
 function SearchPage() {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  useTitle("Search");
 
   useEffect(() => {
     if (query.trim().length === 0) {

@@ -17,7 +17,6 @@ function EditHeader() {
   const previewUrl = user?.avatarUrl || null;
 
   const fileInputRef = useRef(null);
-  const gradientId = user.name ? getRandomNumberFromString(user.name) : 1;
 
   const handleUploadAvatar = async (file) => {
     try {
@@ -43,6 +42,7 @@ function EditHeader() {
     try {
       await deleteAvatar();
       setUser((prev) => ({ ...prev, avatarUrl: null }));
+      setErrors((prev) => ({ ...prev, avatar: null }));
       setIsMenuOpen(false);
     } catch (err) {
       console.error("Failed to delete avatar:", err);
@@ -57,12 +57,13 @@ function EditHeader() {
     if (file.size > 3e6) {
       setErrors({
         avatar: {
-          msg: "File size cannot exceed 3 MB",
+          msg: "File size cannot exceed 3 mb",
         },
       });
       return;
     }
 
+    setErrors((prev) => ({ ...prev, avatar: null }));
     await handleUploadAvatar(file);
   };
 
@@ -91,9 +92,13 @@ function EditHeader() {
           ) : (
             <div
               className={`${styles["profile-header__avatar-placeholder"]} ${avatarStyles["avatar__placeholder"]}`}
-              data-gradient-id={gradientId}
+              data-gradient-id={
+                user?.firstName
+                  ? getRandomNumberFromString(user?.firstName, 5)
+                  : 1
+              }
             >
-              {user?.name ? user.name[0].toUpperCase() : "?"}
+              {user?.firstName ? user?.firstName[0].toUpperCase() : "?"}
             </div>
           )}
 

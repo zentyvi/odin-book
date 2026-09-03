@@ -1,4 +1,6 @@
 import moment from "moment";
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthProvider.jsx";
 
 export function getFullName(user) {
   return user ? `${user.firstName} ${user.lastName || ""}`.trim() : "User";
@@ -41,11 +43,11 @@ export function capitalizeFirstLetter(val) {
   );
 }
 
-export function getRandomNumberFromString(string) {
+export function getRandomNumberFromString(string, max = 5) {
   let r = string.split("").reduce((a, r) => {
     return r.charCodeAt();
   }, 0);
-  return (r % 5) + 1;
+  return (r % max) + 1;
 }
 
 export function getMyLocalSettings() {
@@ -95,4 +97,14 @@ export const filterData = (array, id) => {
   }
 
   return array.filter((i) => i?.id !== id);
+};
+
+export const useTitle = (title) => {
+  const { user } = useAuth();
+  const receivedRequestsNumber = user?.receivedRequests?.length;
+  const notifications =
+    receivedRequestsNumber > 0 ? `(${receivedRequestsNumber}) ` : "";
+  useEffect(() => {
+    document.title = `${notifications}${title} | Odin blog`;
+  }, [title, notifications]);
 };

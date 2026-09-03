@@ -5,7 +5,7 @@ import Avatar from "../../components/Avatar.jsx";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 
 function FriendRequestItem({ request, setUser }) {
-  const { removeFriendReqestFromCache } = useAuth();
+  const { removeFriendReqestFromCache, addFriendToCache } = useAuth();
   const { openModal } = useModal();
   const sender = request?.sender;
   const fullName = getFullName(sender);
@@ -18,6 +18,9 @@ function FriendRequestItem({ request, setUser }) {
     try {
       const result = await handleRequestAction(request?.id, action);
       removeFriendReqestFromCache(request?.id);
+      if (action === "ACCEPT") {
+        addFriendToCache(sender);
+      }
       setUser((prev) => {
         return {
           ...prev,

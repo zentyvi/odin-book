@@ -5,7 +5,7 @@ import {
   createFriendRequest,
   deleteFriend,
 } from "../../api/functions/users.js";
-import { getFullName } from "../../utilis/helpers.js";
+import { getFullName, useTitle } from "../../utilis/helpers.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { useModal } from "../../contexts/ModalProvider.jsx";
 import Loader from "../../components/Loader.jsx";
@@ -28,6 +28,7 @@ function UserProfilePage() {
   } = useAuth();
 
   const isMyProfile = currentUser?.id === user?.id;
+  useTitle(isMyProfile ? "Me" : user?.username || "User");
 
   const fullName = getFullName(user);
   const hasFriendRequest = user?.receivedRequests?.length > 0;
@@ -247,7 +248,12 @@ function UserProfilePage() {
           </ul>
         </nav>
       </header>
-      <UserProfileItems type={selectedSection} data={items} setUser={setUser} />
+      <UserProfileItems
+        type={selectedSection}
+        data={items}
+        setUser={setUser}
+        isMyProfile={isMyProfile}
+      />
     </main>
   );
 }

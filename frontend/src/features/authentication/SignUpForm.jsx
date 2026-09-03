@@ -11,6 +11,7 @@ import {
   validateUsername,
   validatePassword,
 } from "../../utilis/validators.js";
+import { useTitle } from "../../utilis/helpers.js";
 const styles = {};
 
 function SignUpForm() {
@@ -21,6 +22,7 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login, continueAsGuest } = useAuth();
+  useTitle("Sign up");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

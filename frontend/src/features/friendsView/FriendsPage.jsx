@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { getMyFriends } from "../../api/functions/users.js";
-import { mergeData } from "../../utilis/helpers.js";
+import { mergeData, useTitle } from "../../utilis/helpers.js";
 import Loader from "../../components/Loader.jsx";
 import UserCard from "../../components/UserCard.jsx";
 
@@ -10,6 +10,7 @@ function FriendsPage() {
   const { user, setUser } = useAuth();
   const friends = user?.friends;
   const [loading, setLoading] = useState(user && friends === undefined);
+  useTitle("Friends");
 
   useEffect(() => {
     const fetchFriends = async () => {

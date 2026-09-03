@@ -5,6 +5,7 @@ import FormInput from "../../components/FormInput";
 import GoogleLogInButton from "../../components/GoogleLogInButton";
 import GitHubLogInButton from "../../components/GithubLogInButton";
 import { useAuth } from "../../contexts/AuthProvider";
+import { useTitle } from "../../utilis/helpers.js";
 const styles = {};
 
 function LogInForm() {
@@ -13,6 +14,7 @@ function LogInForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login, continueAsGuest } = useAuth();
+  useTitle("Log in");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

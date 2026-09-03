@@ -6,8 +6,9 @@ import Avatar from "../../components/Avatar.jsx";
 import LikeButton from "../../components/LikeButton.jsx";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
+import { Link } from "react-router";
 
-function Comment({ comment, postId }) {
+function Comment({ comment, postId, includeNavigation = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { settings, likeCommentInCache, deleteCommentFromCache } = useData();
   const { openModal } = useModal();
@@ -56,6 +57,13 @@ function Comment({ comment, postId }) {
               <button aria-label="Delete comment" onClick={handleDelete}>
                 Delete
               </button>
+            </li>
+          )}
+          {includeNavigation && (
+            <li>
+              <Link to={`/posts/${postId}`} replace={true}>
+                To post
+              </Link>
             </li>
           )}
         </ul>

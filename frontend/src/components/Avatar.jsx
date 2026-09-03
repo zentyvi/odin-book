@@ -22,7 +22,7 @@ function Avatar({ user, alt, showStatus = false, className = "" }) {
 
   const displayName = user.firstName || "User";
   const gradientId = user.firstName
-    ? getRandomNumberFromString(user.firstName)
+    ? getRandomNumberFromString(user.firstName, 5)
     : 1;
 
   return (
@@ -44,7 +44,7 @@ function Avatar({ user, alt, showStatus = false, className = "" }) {
           data-gradient-id={gradientId}
         >
           <span className={styles["avatar__initial"]}>
-            {displayName[0]?.toUpperCase()}
+            {displayName[0] ? displayName[0]?.toUpperCase() : "?"}
           </span>
         </div>
       )}

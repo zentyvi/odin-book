@@ -5,11 +5,13 @@ import TimeAndFormat from "./sections/TimeAndFormat.jsx";
 import PrivacyAndSecurity from "./sections/PrivacyAndSecurity.jsx";
 import Appearance from "./sections/Appearance.jsx";
 import AccountActions from "./sections/AccountActions.jsx";
+import { useTitle } from "../../utilis/helpers.js";
 
 function SettingsPage() {
   const { isAuthenticated } = useAuth();
   const { updateSettings } = useData();
   const [settingsToUpdate, setSettingsToUpdate] = useState({});
+  useTitle("Settings");
 
   const handleSave = async () => {
     try {
@@ -34,12 +36,16 @@ function SettingsPage() {
       </header>
       <div>
         <div>
-          <Appearance updateField={updateField} />
-          <TimeAndFormat updateField={updateField} />
-          {isAuthenticated && <PrivacyAndSecurity updateField={updateField} />}
-        </div>
-        <div>
-          <button onClick={handleSave}>Save</button>
+          <div>
+            <Appearance updateField={updateField} />
+            <TimeAndFormat updateField={updateField} />
+            {isAuthenticated && (
+              <PrivacyAndSecurity updateField={updateField} />
+            )}
+          </div>
+          <div>
+            <button onClick={handleSave}>Save</button>
+          </div>
         </div>
         {isAuthenticated && (
           <div>

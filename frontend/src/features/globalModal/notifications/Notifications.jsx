@@ -5,10 +5,11 @@ function Notifications() {
   const { notifications } = useModal();
 
   if (notifications?.length > 0) {
+    const newsToOlder = notifications.reverse();
     return (
       <div>
         <ul>
-          {notifications.map((n) => (
+          {newsToOlder.map((n) => (
             <Notification notification={n} key={n.id} />
           ))}
         </ul>

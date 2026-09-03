@@ -46,7 +46,9 @@ function Header() {
   return (
     <header>
       <div>
-        <h1>Odin Book</h1>
+        <Link to="/" replace={true}>
+          <h1>Odin Book</h1>
+        </Link>
       </div>
       <div>
         <ul>

@@ -5,22 +5,24 @@ import FriendRequestItem from "./FriendRequestItem.jsx";
 
 const style = {};
 
-function UserProfileItems({ type, data, setUser }) {
+function UserProfileItems({ type, data, setUser, isMyProfile }) {
   const loading = typeof data === "undefined";
 
   if (loading) {
     return <Loader />;
   }
 
+  const prefix = isMyProfile ? "You haven't" : "This user hasn't";
+
   let items;
   let message;
   switch (type) {
     case "POSTS":
-      message = "This user hasn't written any posts yet";
+      message = `${prefix} written any posts yet`;
       items = data.map((p) => <PostCard key={p.id} post={p} isMyPost={true} />);
       break;
     case "COMMENTS":
-      message = "This user hasn't written any comments yet";
+      message = `${prefix} written any comments yet`;
       items = data.map((c) => (
         <Comment key={c.id} comment={c} includeNavigation={true} />
       ));

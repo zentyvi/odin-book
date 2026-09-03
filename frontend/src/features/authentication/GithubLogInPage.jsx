@@ -3,12 +3,14 @@ import { useSearchParams, Link } from "react-router";
 import { githubLogIn } from "../../api/functions/auth.js";
 import Loader from "../../components/Loader.jsx";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
+import { useTitle } from "../../utilis/helpers.js";
 
 function GithubLogInPage() {
   const [params] = useSearchParams();
   const code = params.get("code");
   const [loading, setLoading] = useState(Boolean(code));
   const { login } = useAuth();
+  useTitle("Loading...");
 
   useEffect(() => {
     if (!code) {

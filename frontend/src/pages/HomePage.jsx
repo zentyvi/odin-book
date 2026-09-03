@@ -15,7 +15,6 @@ import Loader from "../components/Loader";
 function HomePage() {
   const { user, setUser, guestMode, isAuthenticated } = useAuth();
   const { setPosts, posts, setSettings } = useData();
-
   const loading = (!guestMode && !user) || posts?.length === 0;
 
   useEffect(() => {

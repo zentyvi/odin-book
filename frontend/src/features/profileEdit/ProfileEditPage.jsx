@@ -2,9 +2,11 @@ import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import EditFields from "./EditFields.jsx";
 import EditHeader from "./EditHeader.jsx";
+import { useTitle } from "../../utilis/helpers.js";
 
 function ProfileEditPage() {
   const { isAuthenticated } = useAuth();
+  useTitle("Edit");
 
   return (
     <main>

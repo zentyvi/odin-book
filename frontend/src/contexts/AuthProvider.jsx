@@ -54,6 +54,13 @@ export function AuthProvider({ children }) {
     removeFromCache("receivedRequests", requestId);
   };
 
+  const addFriendToCache = (friend) => {
+    setUser((prev) => {
+      const oldFriends = prev?.friends || [];
+      return { ...prev, friends: mergeData(oldFriends, [friend]) };
+    });
+  };
+
   const updateFriendRequests = (newRequests) => {
     setUser((prev) => {
       const oldRequests = prev?.receivedRequests || [];
@@ -80,6 +87,7 @@ export function AuthProvider({ children }) {
         removeFromCache,
         removeFriendFromCache,
         removeFriendReqestFromCache,
+        addFriendToCache,
         updateFriendRequests,
       }}
     >
