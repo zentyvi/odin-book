@@ -1,9 +1,5 @@
+import { saveToken } from "../../utilis/helpers.js";
 import { api_url } from "../config.js";
-
-function saveToken(data) {
-  const { token } = data;
-  localStorage.setItem("token", token);
-}
 
 async function signUp(data) {
   const response = await fetch(`${api_url}/auth/sign-up`, {

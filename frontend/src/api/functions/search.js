@@ -1,8 +1,8 @@
+import { getBearer } from "../../utilis/helpers.js";
 import { api_url } from "../config.js";
 
 async function searchUsers(query, abortConroller = null) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/search/users?query=${query}`, {
     headers: {
       authorization: bearer,

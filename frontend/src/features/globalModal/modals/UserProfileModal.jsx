@@ -1,33 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getFullName } from "../../../utilis/helpers.js";
-import {
-  createFriendRequest,
-  deleteFriend,
-  getUserPreview,
-} from "../../../api/functions/users.js";
-import Avatar from "../../../components/Avatar.jsx";
+import { getUserPreview } from "../../../api/functions/users.js";
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
-import { useModal } from "../../../contexts/ModalProvider.jsx";
+import Avatar from "../../../components/Avatar.jsx";
+import ActionsPanel from "../../userActions/ActionsPanel.jsx";
 
 function UserProfileModal({ data, closeModal }) {
   const [user, setUser] = useState(data);
-  const { sendNotification } = useModal();
-  const {
-    user: currentUser,
-    removeFriendFromCache,
-    isAuthenticated,
-  } = useAuth();
-
-  const isMyProfile = currentUser?.id === user?.id;
-  const fullName = getFullName(user);
-  const hasFriendRequest = user?.receivedRequests?.length > 0;
-  const areFriends = user?.friends?.length > 0;
-  const isFriendRequestDisabled =
-    hasFriendRequest || typeof user?.receivedRequests === "undefined";
+  const { user: currentUser } = useAuth();
 
   const count = user?._count;
-  const requestButtonRef = useRef();
+  const isMyProfile = currentUser?.id === user?.id;
+  const fullName = getFullName(user);
 
   const statsLoaded =
     count?.friends !== undefined &&
@@ -51,65 +36,6 @@ function UserProfileModal({ data, closeModal }) {
 
     fetchUserData();
   }, [data]);
-
-  const handleFriendRequest = async () => {
-    const { current: button } = requestButtonRef;
-    const lastContent = button.textContent;
-    try {
-      if (!isAuthenticated) {
-        sendNotification(
-          "Error",
-          "Please log in first to add friends",
-          "ERROR",
-        );
-        button.disabled = true;
-        setTimeout(() => {
-          button.disabled = false;
-        }, 3000);
-        return;
-      }
-      button.textContent = "Sending...";
-      button.disabled = true;
-      await createFriendRequest(user?.id);
-      button.textContent = "Sent!";
-    } catch (err) {
-      button.textContent = "Error has occured";
-      setTimeout(() => {
-        button.textContent = lastContent;
-        button.disabled = false;
-      }, 3000);
-      console.error(err);
-    }
-  };
-
-  const handleDeleteFriend = async () => {
-    if (!confirm("Are you sure that you want to delete this friend&")) {
-      return;
-    }
-    const button = requestButtonRef.current;
-    const lastContent = button.textContent;
-    try {
-      button.disabled = true;
-      button.textContent = "Deleting friend...";
-      await deleteFriend(user?.id);
-      removeFriendFromCache(user?.id);
-      setUser((prev) => {
-        const newFriendsCount = prev._count?.friends - 1;
-        return {
-          ...prev,
-          _count: { ...prev._count, friends: newFriendsCount },
-          friends: [],
-        };
-      });
-    } catch (err) {
-      button.textContent = "Error has occured";
-      setTimeout(() => {
-        button.textContent = lastContent;
-        button.disabled = false;
-      }, 3000);
-      console.error(err);
-    }
-  };
 
   return (
     <div>
@@ -156,38 +82,16 @@ function UserProfileModal({ data, closeModal }) {
       {!isMyProfile && (
         <div>
           {actionsLoaded ? (
-            <ul>
-              <li>
-                {areFriends ? (
-                  <button ref={requestButtonRef} onClick={handleDeleteFriend}>
-                    Delete friend
-                  </button>
-                ) : (
-                  <button
-                    disabled={isFriendRequestDisabled}
-                    ref={requestButtonRef}
-                    onClick={handleFriendRequest}
-                  >
-                    {hasFriendRequest
-                      ? "Already sent friend request"
-                      : "Send friend request"}
-                  </button>
-                )}
-              </li>
-              <li>
-                <button aria-label={`To chat with ${fullName}`}>Chat</button>
-              </li>
+            <ActionsPanel companion={user} setCompanion={setUser}>
               <li>
                 <Link
-                  aria-label={`To ${fullName}'s profile`}
-                  to={`/users/${user?.username}`}
-                  onClick={() => closeModal()}
-                  state={user}
+                  to={`/users/${user?.username || user?.id}`}
+                  replace={true}
                 >
                   To profile
                 </Link>
               </li>
-            </ul>
+            </ActionsPanel>
           ) : (
             <div>Loading...</div>
           )}

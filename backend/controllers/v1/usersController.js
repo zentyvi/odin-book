@@ -30,8 +30,8 @@ async function $getMyInfo(req, res, next) {
         receivedRequests: {
           select: {
             id: true,
-          }
-        }
+          },
+        },
       },
     });
 
@@ -100,6 +100,89 @@ async function $getMyFriends(req, res, next) {
 }
 
 const getMyFriends = [protectRoute, $getMyFriends];
+
+async function $getMyChats(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+
+    const user = await prisma_client.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        chats: {
+          select: {
+            id: true,
+            users: {
+              where: {
+                NOT: { id: userId },
+              },
+              select: {
+                id: true,
+                avatarUrl: true,
+                firstName: true,
+                lastName: true,
+                username: true,
+              },
+            },
+            messages: {
+              select: {
+                id: true,
+                imageUrl: true,
+                content: true,
+                createdAt: true,
+                isRead: true,
+                author: {
+                  select: {
+                    id: true,
+                    avatarUrl: true,
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                  },
+                },
+              },
+              take: 1,
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+            _count: {
+              select: {
+                messages: {
+                  where: {
+                    NOT: { authorId: userId },
+                    isRead: false,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    const { chats } = user;
+    chats.forEach((chat) => {
+      chat.companion = chat.users[0];
+      chat.lastMessage = chat.messages.length > 0 ? chat.messages[0] : null;
+      chat.unreadMessages = chat._count.messages;
+      delete chat._count;
+      delete chat.messages;
+      delete chat.users;
+    });
+
+    res.json(chats);
+  } catch (err) {
+    next(err);
+  }
+}
+
+const getMyChats = [protectRoute, $getMyChats];
 
 async function $updateMySettings(req, res, next) {
   try {
@@ -685,6 +768,7 @@ const usersController = {
   getMyInfo,
   getMySettings,
   getMyFriends,
+  getMyChats,
   updateMySettings,
   updateMyProfile,
   uploadAvatarPut,

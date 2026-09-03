@@ -108,3 +108,14 @@ export const useTitle = (title) => {
     document.title = `${notifications}${title} | Odin blog`;
   }, [title, notifications]);
 };
+
+export const getBearer = () => {
+  const token = localStorage.getItem("token");
+  const bearer = token ? `Bearer ${token}` : "";
+  return bearer;
+};
+
+export const saveToken = (data) => {
+  const { token } = data;
+  localStorage.setItem("token", token);
+};

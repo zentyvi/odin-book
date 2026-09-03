@@ -11,6 +11,7 @@ const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
   const [posts, setPosts] = useState([]);
+  const [chats, setChats] = useState([]);
   const [settings, setSettings] = useState(getMyLocalSettings());
   const { isAuthenticated } = useAuth();
 
@@ -126,6 +127,8 @@ export function DataProvider({ children }) {
         settings,
         setSettings,
         updateSettings,
+        chats,
+        setChats,
         setPosts,
         likePostInCache,
         updatePostInCache,

@@ -1,8 +1,8 @@
+import { getBearer } from "../../utilis/helpers.js";
 import { api_url } from "../config.js";
 
 async function getMyInfo() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me`, {
     headers: {
       authorization: bearer,
@@ -22,8 +22,7 @@ async function getMyInfo() {
 }
 
 async function getMyFriends() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/friends`, {
     headers: {
       authorization: bearer,
@@ -39,8 +38,7 @@ async function getMyFriends() {
 }
 
 async function getMySettings() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/settings`, {
     headers: {
       authorization: bearer,
@@ -55,9 +53,24 @@ async function getMySettings() {
   return result;
 }
 
+async function getMyChats() {
+  const bearer = getBearer();
+  const response = await fetch(`${api_url}/users/me/chats`, {
+    headers: {
+      authorization: bearer,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch chats");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
 async function updateMySettings(newSettings) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/settings`, {
     method: "PUT",
     headers: {
@@ -76,8 +89,7 @@ async function updateMySettings(newSettings) {
 }
 
 async function updateMyProfile(data) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me`, {
     method: "PATCH",
     headers: {
@@ -96,8 +108,7 @@ async function updateMyProfile(data) {
 }
 
 async function uploadAvatar(formData) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/avatar`, {
     method: "PUT",
     headers: {
@@ -115,8 +126,7 @@ async function uploadAvatar(formData) {
 }
 
 async function deleteAvatar() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/avatar`, {
     method: "DELETE",
     headers: {
@@ -133,8 +143,7 @@ async function deleteAvatar() {
 }
 
 async function deleteMyProfile() {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me`, {
     method: "DELETE",
     headers: {
@@ -151,8 +160,7 @@ async function deleteMyProfile() {
 }
 
 async function getUserPreview(userId) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/${userId}/preview`, {
     headers: {
       authorization: bearer,
@@ -168,8 +176,7 @@ async function getUserPreview(userId) {
 }
 
 async function getUserProfile(userId) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/${userId}`, {
     headers: {
       authorization: bearer,
@@ -185,8 +192,7 @@ async function getUserProfile(userId) {
 }
 
 async function createFriendRequest(userId) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/${userId}/friend`, {
     method: "POST",
     headers: {
@@ -203,8 +209,7 @@ async function createFriendRequest(userId) {
 }
 
 async function handleRequestAction(requestId, action) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/requests/${requestId}`, {
     method: "POST",
     headers: {
@@ -223,8 +228,7 @@ async function handleRequestAction(requestId, action) {
 }
 
 async function deleteFriend(friendId) {
-  const token = localStorage.getItem("token");
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/users/me/friends/${friendId}`, {
     method: "DELETE",
     headers: {
@@ -244,6 +248,7 @@ export {
   getMyInfo,
   getMyFriends,
   getMySettings,
+  getMyChats,
   updateMySettings,
   updateMyProfile,
   uploadAvatar,

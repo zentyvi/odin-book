@@ -11,6 +11,7 @@ import {
 } from "../utilis/helpers.js";
 import Header from "../features/header/Header.jsx";
 import Loader from "../components/Loader";
+import Sidebar from "../features/sidebar/Sidebar.jsx";
 
 function HomePage() {
   const { user, setUser, guestMode, isAuthenticated, logout } = useAuth();
@@ -69,6 +70,7 @@ function HomePage() {
   return (
     <div id="main-wrapper">
       <Header />
+      <Sidebar />
       <Outlet />
     </div>
   );

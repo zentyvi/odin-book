@@ -1,45 +1,13 @@
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { getFullName } from "../../utilis/helpers.js";
+import { getNavigationLinks } from "../../utilis/navigation_links.jsx";
 import Avatar from "../../components/Avatar.jsx";
 
-const links = [
-  {
-    path: "/",
-    title: "Home",
-    unactive: <i className="bi bi-house" />,
-    active: <i className="bi bi-house-fill" />,
-  },
-  {
-    path: "/friends",
-    title: "Friends",
-    unactive: <i className="bi bi-people" />,
-    active: <i className="bi bi-people-fill" />,
-  },
-  {
-    path: "/search/users",
-    title: "Search users",
-    unactive: <i className="bi bi-search-heart" />,
-    active: <i className="bi bi-search-heart-fill" />,
-  },
-  {
-    path: "/create/post",
-    title: "Create post",
-    unactive: <i className="bi bi-stickies" />,
-    active: <i className="bi bi-stickies-fill" />,
-  },
-  {
-    path: "/settings",
-    title: "Settings",
-    unactive: <i className="bi bi-gear" />,
-    active: <i className="bi bi-gear-fill" />,
-  },
-];
-
 function Header() {
-  const location = useLocation();
-  const currentPath = location.pathname;
   const { user, isAuthenticated } = useAuth();
+  const links = getNavigationLinks();
+  const { pathname: currentPath } = useLocation();
 
   const friendRequestsNumber = user?.receivedRequests?.length;
 

@@ -6,6 +6,7 @@ const usersRoute = Router();
 usersRoute.get("/me", usersController.getMyInfo);
 usersRoute.get("/me/settings", usersController.getMySettings);
 usersRoute.get("/me/friends", usersController.getMyFriends);
+usersRoute.get("/me/chats", usersController.getMyChats);
 usersRoute.put("/me/settings", usersController.updateMySettings);
 usersRoute.patch("/me", usersController.updateMyProfile);
 usersRoute.put("/me/avatar", usersController.uploadAvatarPut);

@@ -1,16 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
-import {
-  getUserProfile,
-  createFriendRequest,
-  deleteFriend,
-} from "../../api/functions/users.js";
+import { getUserProfile } from "../../api/functions/users.js";
 import { getFullName, useTitle } from "../../utilis/helpers.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
-import { useModal } from "../../contexts/ModalProvider.jsx";
 import Loader from "../../components/Loader.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import UserProfileItems from "./UserProfileItems.jsx";
+import ActionsPanel from "../userActions/ActionsPanel.jsx";
 
 function UserProfilePage() {
   const location = useLocation();
@@ -18,27 +14,27 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(!user);
   const [selectedSection, setSelectedSection] = useState("POSTS");
   const { username } = useParams();
-  const { sendNotification } = useModal();
   const {
     user: currentUser,
     setUser: setCurrentUser,
     updateFriendRequests,
-    removeFriendFromCache,
-    isAuthenticated,
   } = useAuth();
 
   const isMyProfile = currentUser?.id === user?.id;
   useTitle(isMyProfile ? "Me" : user?.username || "User");
 
-  const fullName = getFullName(user);
-  const hasFriendRequest = user?.receivedRequests?.length > 0;
-  const areFriends = user?.friends?.length > 0;
-  const isFriendRequestDisabled =
-    hasFriendRequest || typeof user?.receivedRequests === "undefined";
-  const requestButtonRef = useRef();
-
   const count = user?._count;
   const friendRequestsNumber = currentUser?.receivedRequests?.length;
+  const fullName = getFullName(user);
+
+  const statsLoaded =
+    count?.friends !== undefined &&
+    count?.posts !== undefined &&
+    count?.comments !== undefined;
+
+  const actionsLoaded =
+    user?.receivedRequests !== undefined && user?.id !== undefined;
+
   let items;
   switch (selectedSection) {
     case "POSTS":
@@ -51,14 +47,6 @@ function UserProfilePage() {
       items = user?.receivedRequests;
       break;
   }
-
-  const statsLoaded =
-    count?.friends !== undefined &&
-    count?.posts !== undefined &&
-    count?.comments !== undefined;
-
-  const actionsLoaded =
-    user?.receivedRequests !== undefined && user?.id !== undefined;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,65 +68,6 @@ function UserProfilePage() {
     fetchUserData();
     // eslint-disable-next-line
   }, [username]);
-
-  const handleFriendRequest = async () => {
-    const { current: button } = requestButtonRef;
-    const lastContent = button.textContent;
-    try {
-      if (!isAuthenticated) {
-        sendNotification(
-          "Error",
-          "Please log in first to add friends",
-          "ERROR",
-        );
-        button.disabled = true;
-        setTimeout(() => {
-          button.disabled = false;
-        }, 3000);
-        return;
-      }
-      button.textContent = "Sending...";
-      button.disabled = true;
-      await createFriendRequest(user?.id);
-      button.textContent = "Sent!";
-    } catch (err) {
-      button.textContent = "Error has occured";
-      setTimeout(() => {
-        button.textContent = lastContent;
-        button.disabled = false;
-      }, 3000);
-      console.error(err);
-    }
-  };
-
-  const handleDeleteFriend = async () => {
-    if (!confirm("Are you sure that you want to delete this friend&")) {
-      return;
-    }
-    const { current: button } = requestButtonRef;
-    const lastContent = button.textContent;
-    try {
-      button.disabled = true;
-      button.textContent = "Deleting friend...";
-      await deleteFriend(user?.id);
-      removeFriendFromCache(user?.id);
-      setUser((prev) => {
-        const newFriendsCount = prev._count?.friends - 1;
-        return {
-          ...prev,
-          _count: { ...prev._count, friends: newFriendsCount },
-          friends: [],
-        };
-      });
-    } catch (err) {
-      button.textContent = "Error has occured";
-      setTimeout(() => {
-        button.textContent = lastContent;
-        button.disabled = false;
-      }, 3000);
-      console.error(err);
-    }
-  };
 
   if (loading) {
     return <Loader />;
@@ -194,30 +123,7 @@ function UserProfilePage() {
         {!isMyProfile && (
           <div>
             {actionsLoaded ? (
-              <ul>
-                <li>
-                  {areFriends ? (
-                    <button ref={requestButtonRef} onClick={handleDeleteFriend}>
-                      Delete friend
-                    </button>
-                  ) : (
-                    <button
-                      disabled={isFriendRequestDisabled}
-                      ref={requestButtonRef}
-                      onClick={handleFriendRequest}
-                    >
-                      {hasFriendRequest
-                        ? "Already sent friend request"
-                        : areFriends
-                          ? "You're already friends"
-                          : "Send friend request"}
-                    </button>
-                  )}
-                </li>
-                <li>
-                  <button aria-label={`To chat with ${fullName}`}>Chat</button>
-                </li>
-              </ul>
+              <ActionsPanel companion={user} setCompanion={setUser} />
             ) : (
               <div>Loading...</div>
             )}
