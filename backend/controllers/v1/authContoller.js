@@ -1,9 +1,8 @@
 import { validationResult } from "express-validator";
 import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { prisma_client } from "../../lib/prisma.js";
-import { makeid } from "../../utils/helpers.js";
+import { createJWT, makeid } from "../../utils/helpers.js";
 import validateSignUp from "../../middlewares/validators/validateSignUp.js";
 
 const google_client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -34,14 +33,8 @@ async function $signUpPost(req, res, next) {
       },
     });
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-      },
-      process.env.SECRET || "supersecretkey12345",
-      { expiresIn: "7d" },
-    );
+    const token = createJWT({ user }, "7d");
+
     res.status(201).json({ token });
   } catch (err) {
     next(err);
@@ -77,14 +70,7 @@ async function logInPost(req, res, next) {
         .json({ errors: { password: { msg: "Incorrect password" } } });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-      },
-      process.env.SECRET || "supersecretkey12345",
-      { expiresIn: "7d" },
-    );
+    const token = createJWT({ user }, "7d");
 
     res.status(200).json({ token });
   } catch (err) {
@@ -131,16 +117,9 @@ async function googleLogInPost(req, res, next) {
       },
     });
 
-    const jwtToken = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-      },
-      process.env.SECRET || "supersecretkey12345",
-      { expiresIn: "7d" },
-    );
+    const token = createJWT({ user }, "7d");
 
-    res.status(201).json({ token: jwtToken });
+    res.status(201).json({ token });
   } catch (err) {
     next(err);
   }
@@ -209,16 +188,9 @@ async function githubLogInPost(req, res, next) {
       },
     });
 
-    const jwtToken = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-      },
-      process.env.SECRET || "supersecretkey12345",
-      { expiresIn: "7d" },
-    );
+    const token = createJWT({ user }, "7d");
 
-    res.status(201).json({ token: jwtToken });
+    res.status(201).json({ token });
   } catch (err) {
     next(err);
   }

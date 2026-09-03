@@ -13,7 +13,7 @@ import Header from "../features/header/Header.jsx";
 import Loader from "../components/Loader";
 
 function HomePage() {
-  const { user, setUser, guestMode, isAuthenticated } = useAuth();
+  const { user, setUser, guestMode, isAuthenticated, logout } = useAuth();
   const { setPosts, posts, setSettings } = useData();
   const loading = (!guestMode && !user) || posts?.length === 0;
 
@@ -27,12 +27,15 @@ function HomePage() {
           !localSettings ||
           result?.settings?.updatedAt !== localSettings?.updatedAt
         ) {
-          const newSettings = await getMySettings();
-          updateLocalSettings(newSettings);
-          setSettings(newSettings);
+          const actualSettings = await getMySettings();
+          updateLocalSettings(actualSettings);
+          setSettings(actualSettings);
         }
         setUser(result);
       } catch (err) {
+        if (err.action === "DELETE_TOKEN") {
+          logout();
+        }
         console.error(err);
       }
     };

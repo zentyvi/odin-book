@@ -25,7 +25,9 @@ function authorizeUser(req, res, next) {
 function protectRoute(req, res, next) {
   const user = req.user;
   if (!user) {
-    return res.status(403).json({ message: "Invalid or expired token" });
+    return res
+      .status(403)
+      .json({ message: "Invalid or expired token", action: "DELETE_TOKEN" });
   }
 
   next();

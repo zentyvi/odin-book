@@ -9,11 +9,14 @@ async function getMyInfo() {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch user's data");
-  }
-
   const result = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(result?.message || "Failed to fetch user's data");
+    error.action = result?.action;
+    error.status = response.status;
+    throw error;
+  }
 
   return result;
 }

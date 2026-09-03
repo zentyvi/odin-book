@@ -14,3 +14,14 @@ export function makeid(length) {
   }
   return result;
 }
+
+export const createJWT = (data, duration = "7d") => {
+  const jwtToken = jwt.sign(
+    {
+      id: data.id,
+      username: data.username,
+    },
+    process.env.SECRET || "supersecretkey12345",
+    { expiresIn: duration },
+  );
+};
