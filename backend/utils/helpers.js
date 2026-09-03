@@ -26,4 +26,6 @@ export const createJWT = (data, duration = "7d") => {
     process.env.SECRET || "supersecretkey12345",
     { expiresIn: duration },
   );
+
+  return jwtToken;
 };

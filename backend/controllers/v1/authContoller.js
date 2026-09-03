@@ -33,7 +33,7 @@ async function $signUpPost(req, res, next) {
       },
     });
 
-    const token = createJWT({ user }, "7d");
+    const token = createJWT(user, "7d");
 
     res.status(201).json({ token });
   } catch (err) {
@@ -70,7 +70,7 @@ async function logInPost(req, res, next) {
         .json({ errors: { password: { msg: "Incorrect password" } } });
     }
 
-    const token = createJWT({ user }, "7d");
+    const token = createJWT(user, "7d");
 
     res.status(200).json({ token });
   } catch (err) {
@@ -117,7 +117,7 @@ async function googleLogInPost(req, res, next) {
       },
     });
 
-    const token = createJWT({ user }, "7d");
+    const token = createJWT(user, "7d");
 
     res.status(201).json({ token });
   } catch (err) {
@@ -188,7 +188,7 @@ async function githubLogInPost(req, res, next) {
       },
     });
 
-    const token = createJWT({ user }, "7d");
+    const token = createJWT(user, "7d");
 
     res.status(201).json({ token });
   } catch (err) {
