@@ -1,8 +1,9 @@
 import { useRef } from "react";
-import { createChat } from "../../../api/functions/chats.js";
+import { useNavigate } from "react-router";
 import { getFullName } from "../../../utilis/helpers.js";
 
 function ChatButton({ companion }) {
+  const navigate = useNavigate();
   const buttonRef = useRef();
 
   const handleChat = async () => {
@@ -10,8 +11,7 @@ function ChatButton({ companion }) {
     try {
       button.disabled = true;
       button.textContent = "Starting chat...";
-      const result = await createChat(companion?.id || companion?.username);
-      console.log(result);
+      navigate(`/chats/${companion?.username || companion?.id}`);
     } catch (err) {
       button.textContent = "Error has occured";
       setTimeout(() => {

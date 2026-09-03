@@ -1,7 +1,7 @@
 import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
 
-async function $startChat(req, res, next) {
+async function $getChat(req, res, next) {
   try {
     const userId = req?.user?.id;
     const companion_id_or_username = req.params?.user;
@@ -15,6 +15,10 @@ async function $startChat(req, res, next) {
       },
       select: {
         id: true,
+        avatarUrl: true,
+        firstName: true,
+        lastName: true,
+        username: true,
         settings: {
           select: {
             whoCanTextMe: true,
@@ -35,63 +39,61 @@ async function $startChat(req, res, next) {
       return (res.status(404), json({ message: "Companion not found" }));
     }
 
-    if (companion.settings.whoCanTextMe === "FRIENDS") {
-      const areFriends = companion.friends.length > 0;
-      if (!areFriends) {
-        return res
-          .status(403)
-          .json({
-            message: "This user only accepts messages from their friends",
-          });
-      }
-    }
+    const areFriends = companion.friends.length > 0;
+    const whoCanText = companion.settings.whoCanTextMe;
 
-    const existingChat = await prisma_client.chat.findFirst({
+    const chat = await prisma_client.chat.findFirst({
       where: {
-        AND: [
-          { users: { some: { id: userId } } },
-          {
-            users: {
-              some: {
-                OR: [
-                  { id: companion_id_or_username },
-                  { username: companion_id_or_username },
-                ],
-              },
-            },
-          },
-        ],
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (existingChat) {
-      return res.json({ status: "FOUND_CHAT", chatId: existingChat.id });
-    }
-
-    const chat = await prisma_client.chat.create({
-      data: {
         users: {
-          connect: [{ id: userId }, { id: companion.id }],
+          some: { id: userId },
+          some: { id: companion.id },
         },
       },
       select: {
         id: true,
+        messages: {
+          select: {
+            content: true,
+            imageUrl: true,
+            createdAt: true,
+            isRead: true,
+            authorId: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
     });
 
-    res.json({ status: "CREATED_CHAT", chatId: chat.id });
+    if (!chat) {
+      const response = {
+        status: "NOT_FOUND",
+        areFriends,
+        whoCanText,
+      };
+      return res.json(response);
+    }
+
+    delete companion.settings;
+    delete companion.friends;
+    const response = {
+      status: "FOUND",
+      areFriends,
+      whoCanText,
+      chat,
+      companion,
+    };
+    res.json(response);
   } catch (err) {
     next(err);
   }
 }
 
-const startChat = [protectRoute, $startChat];
+const getChat = [protectRoute, $getChat];
 
 const chatsController = {
-  startChat,
+  getChat,
 };
 
 export default chatsController;

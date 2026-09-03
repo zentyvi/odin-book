@@ -144,7 +144,7 @@ async function $getMyChats(req, res, next) {
               },
               take: 1,
               orderBy: {
-                createdAt: "desc",
+                createdAt: "asc",
               },
             },
             _count: {
