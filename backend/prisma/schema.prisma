@@ -28,6 +28,9 @@ model User {
 
   settings Settings?
 
+  chats    Chat[]
+  messages Message[]
+
   sentRequests     FriendRequest[] @relation("Sender")
   receivedRequests FriendRequest[] @relation("Receiver")
   createdAt        DateTime        @default(now())
@@ -86,4 +89,25 @@ model Comment {
   postId    String
   likedBy   User[]
   createdAt DateTime @default(now())
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  users     User[]
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  imageUrl  String?
+  content   String?
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  isRead    Boolean  @default(false)
+
+  @@index([chatId])
 }
