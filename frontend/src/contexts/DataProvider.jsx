@@ -2,6 +2,8 @@ import { createContext, useContext, useState } from "react";
 import {
   filterData,
   getMyLocalSettings,
+  mergeData,
+  moveItemToFront,
   updateLocalSettings,
 } from "../utilis/helpers.js";
 import { updateMySettings } from "../api/functions/users.js";
@@ -27,6 +29,10 @@ export function DataProvider({ children }) {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const clearDataCache = () => {
+    setChats([]);
   };
 
   const likePostInCache = (updatedPostData) => {
@@ -120,15 +126,71 @@ export function DataProvider({ children }) {
     );
   };
 
+  const getChatFromCache = (username_or_id) => {
+    const chat = chats.find(
+      (c) =>
+        c?.companion?.username === username_or_id ||
+        c?.companion?.id === username_or_id,
+    );
+
+    return chat || null;
+  };
+
+  const updateChatsInCache = (newChats) => {
+    setChats((prev) => {
+      return mergeData(prev, newChats);
+    });
+  };
+
+  const updateChatInCache = (newChat) => {
+    setChats((prev) => {
+      let found = false;
+      const newChats = prev.map((oldChat) => {
+        if (oldChat.id === newChat.id) {
+          found = true;
+          return newChat;
+        }
+        return oldChat;
+      });
+      if (!found) {
+        newChats.unshift(newChat);
+      }
+      return newChats;
+    });
+  };
+
+  const moveChatToFront = (chatId) => {
+    setChats((prev) => moveItemToFront(prev, chatId));
+  };
+
+  const removeChatFromCache = (chatId) => {
+    setChats((prev) => filterData(prev, chatId));
+  };
+
+  const findChat = (chatId) => {
+    return chats.find((chat) => chat.id === chatId);
+  };
+
+  const removeMessageFromCache = (chatId, messageId) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === chatId) {
+          console.log("FOUND CHAT");
+          return { ...chat, messages: filterData(chat.messages, messageId) };
+        }
+        return chat;
+      }),
+    );
+  };
+
   return (
     <DataContext.Provider
       value={{
+        clearDataCache,
         posts,
         settings,
         setSettings,
         updateSettings,
-        chats,
-        setChats,
         setPosts,
         likePostInCache,
         updatePostInCache,
@@ -136,6 +198,15 @@ export function DataProvider({ children }) {
         likeCommentInCache,
         addCommentInCache,
         deleteCommentFromCache,
+        chats,
+        setChats,
+        getChatFromCache,
+        updateChatsInCache,
+        updateChatInCache,
+        moveChatToFront,
+        removeChatFromCache,
+        findChat,
+        removeMessageFromCache,
       }}
     >
       {children}

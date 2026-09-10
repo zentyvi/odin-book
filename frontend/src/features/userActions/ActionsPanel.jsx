@@ -4,8 +4,8 @@ import FreindRequestButton from "./buttons/FriendRequestButton.jsx";
 function ActionsPanel({ companion, setCompanion, children }) {
   return (
     <ul aria-label="Actions panel">
-      <ChatButton companion={companion} />
       <FreindRequestButton companion={companion} setCompanion={setCompanion} />
+      <ChatButton companion={companion} />
       {children}
     </ul>
   );

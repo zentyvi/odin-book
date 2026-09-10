@@ -92,10 +92,11 @@ model Comment {
 }
 
 model Chat {
-  id        String    @id @default(uuid())
-  users     User[]
-  messages  Message[]
-  createdAt DateTime  @default(now())
+  id         String    @id @default(uuid())
+  users      User[]
+  messages   Message[]
+  createdAt  DateTime  @default(now())
+  lastUpdate DateTime? @updatedAt
 }
 
 model Message {

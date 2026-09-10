@@ -10,7 +10,7 @@ import Chats from "./sections/Chats/Chats.jsx";
 const styles = {};
 
 function Sidebar() {
-  const { chats, setChats } = useData();
+  const { chats, updateChatsInCache } = useData();
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function Sidebar() {
           return;
         }
         const chats = await getMyChats();
-        setChats(chats);
+        updateChatsInCache(chats);
       } catch (err) {
         console.error(err);
       }

@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import {
   getCalendarTime,
   getRandomNumberFromString,
+  useEscape,
 } from "../../utilis/helpers.js";
 import { uploadAvatar, deleteAvatar } from "../../api/functions/users.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
@@ -15,6 +16,7 @@ function EditHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [errors, setErrors] = useState(null);
   const previewUrl = user?.avatarUrl || null;
+  useEscape(() => setIsMenuOpen(false));
 
   const fileInputRef = useRef(null);
 

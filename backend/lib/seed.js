@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import { prisma_client } from "./prisma.js";
 
-const usersNumber = 4;
+const usersNumber = 20;
 const postsNumber = 4;
 
 async function main() {

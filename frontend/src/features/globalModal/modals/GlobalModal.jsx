@@ -1,18 +1,11 @@
-import { useEffect } from "react";
 import FocusLock from "react-focus-lock";
 import { useModal } from "../../../contexts/ModalProvider.jsx";
 import UserProfileModal from "./UserProfileModal.jsx";
+import { useEscape } from "../../../utilis/helpers.js";
 
 function GlobalModal() {
   const { activeModal, closeModal } = useModal();
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") closeModal();
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  });
+  useEscape(closeModal);
 
   return (
     <>

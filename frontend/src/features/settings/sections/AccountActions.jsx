@@ -1,8 +1,10 @@
 import { deleteMyProfile } from "../../../api/functions/users.js";
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
+import { useData } from "../../../contexts/DataProvider.jsx";
 import SettingsSection from "../SettingsSection.jsx";
 
 function AccountActions() {
+  const { clearDataCache } = useData();
   const { logout } = useAuth();
 
   const handleDelete = async () => {
@@ -15,6 +17,7 @@ function AccountActions() {
         return;
       }
       await deleteMyProfile();
+      clearDataCache();
       logout();
     } catch (err) {
       console.error(err);
@@ -33,6 +36,7 @@ function AccountActions() {
               if (!confirm("Are you sure that you want to log out?")) {
                 return;
               }
+              clearDataCache();
               logout();
             }}
           >

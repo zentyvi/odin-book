@@ -1,6 +1,10 @@
 import { useData } from "../../contexts/DataProvider.jsx";
 import { useModal } from "../../contexts/ModalProvider.jsx";
-import { getCalendarTime, getFullName } from "../../utilis/helpers.js";
+import {
+  getCalendarTime,
+  getFullName,
+  useEscape,
+} from "../../utilis/helpers.js";
 import { deleteComment, likeComment } from "../../api/functions/comments.js";
 import Avatar from "../../components/Avatar.jsx";
 import LikeButton from "../../components/LikeButton.jsx";
@@ -13,6 +17,7 @@ function Comment({ comment, postId, includeNavigation = false }) {
   const { settings, likeCommentInCache, deleteCommentFromCache } = useData();
   const { openModal } = useModal();
   const { user } = useAuth();
+  useEscape(() => setIsMenuOpen(false));
 
   const author = comment?.author;
   const isLiked = comment?.likedBy?.length > 0;

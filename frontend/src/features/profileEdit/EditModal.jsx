@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import FocusLock from "react-focus-lock";
+import { useEscape } from "../../utilis/helpers.js";
 const styles = {};
 
 function EditModal({ field, onClose, onSave, errors, setErrors }) {
@@ -7,6 +8,7 @@ function EditModal({ field, onClose, onSave, errors, setErrors }) {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [showPasswords, setShowPasswords] = useState(false);
   const initialValue = useRef(field?.value || "");
+  useEscape(() => onClose());
 
   const error = errors?.[`infoToUpdate.${field?.key}`];
   const confirmPasswordError = errors?.confirmPassword;

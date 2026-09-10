@@ -71,20 +71,32 @@ export function updateLocalSettings(newSettings) {
 export const mergeData = (oldData, newData) => {
   if (!Array.isArray(oldData) || !Array.isArray(newData)) {
     throw new Error(
-      `Both arguments must be arrays, recived: ${typeof oldData} and ${typeof newData}.`,
+      `Both arguments must be arrays, received: [${typeof oldData}, ${typeof newData}]`,
     );
   }
+
   const dataMap = new Map();
 
-  oldData.forEach((oldItem) => dataMap.set(oldItem.id, oldItem));
+  oldData.forEach((oldItem) => {
+    dataMap.set(oldItem.id, JSON.parse(JSON.stringify(oldItem)));
+  });
 
   newData.forEach((newItem) => {
-    const existing = dataMap.get(newItem.id);
+    const freshNewItem = JSON.parse(JSON.stringify(newItem));
+    const existing = dataMap.get(freshNewItem.id);
 
     if (existing) {
-      dataMap.set(newItem.id, { ...existing, ...newItem });
+      const mergedItem = { ...existing, ...freshNewItem };
+
+      Object.keys(mergedItem).forEach((key) => {
+        if (Array.isArray(existing[key]) && Array.isArray(freshNewItem[key])) {
+          mergedItem[key] = mergeData(existing[key], freshNewItem[key]);
+        }
+      });
+
+      dataMap.set(freshNewItem.id, mergedItem);
     } else {
-      dataMap.set(newItem.id, newItem);
+      dataMap.set(freshNewItem.id, freshNewItem);
     }
   });
 
@@ -105,7 +117,7 @@ export const useTitle = (title) => {
   const notifications =
     receivedRequestsNumber > 0 ? `(${receivedRequestsNumber}) ` : "";
   useEffect(() => {
-    document.title = `${notifications}${title} | Odin blog`;
+    document.title = `${notifications}${title} · Odin Book`;
   }, [title, notifications]);
 };
 
@@ -118,4 +130,29 @@ export const getBearer = () => {
 export const saveToken = (data) => {
   const { token } = data;
   localStorage.setItem("token", token);
+};
+
+export const moveItemToFront = (array, targetId) => {
+  const index = array.findIndex((item) => item.id === targetId);
+
+  if (index === -1) return [...array];
+  if (index === 0) return [...array];
+
+  const newArray = [...array];
+  const [item] = newArray.splice(index, 1);
+  newArray.unshift(item);
+
+  return newArray;
+};
+
+export const useEscape = (callback) => {
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") callback();
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  });
 };

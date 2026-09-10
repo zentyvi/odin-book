@@ -16,6 +16,7 @@ import SinglePostPage from "./features/postView/SinglePostPage.jsx";
 import ProfileEditPage from "./features/profileEdit/ProfileEditPage.jsx";
 import SearchPage from "./features/search/searchPage.jsx";
 import SettingsPage from "./features/settings/SettingsPage.jsx";
+import ChatPage from "./features/chat/ChatPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
               { path: "/me/edit", element: <ProfileEditPage /> },
               { path: "/search/users", element: <SearchPage /> },
               { path: "/settings", element: <SettingsPage /> },
+              { path: "/chats/:username", element: <ChatPage /> },
             ],
           },
         ],

@@ -1,9 +1,10 @@
 import { useRef } from "react";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { getFullName } from "../../../utilis/helpers.js";
+import { useModal } from "../../../contexts/ModalProvider.jsx";
 
 function ChatButton({ companion }) {
-  const navigate = useNavigate();
+  const { closeModal } = useModal();
   const buttonRef = useRef();
 
   const handleChat = async () => {
@@ -11,7 +12,7 @@ function ChatButton({ companion }) {
     try {
       button.disabled = true;
       button.textContent = "Starting chat...";
-      navigate(`/chats/${companion?.username || companion?.id}`);
+      closeModal();
     } catch (err) {
       button.textContent = "Error has occured";
       setTimeout(() => {
@@ -24,13 +25,15 @@ function ChatButton({ companion }) {
 
   return (
     <li>
-      <button
+      <Link
+        to={`/chats/${companion?.username || companion?.id}`}
+        replace={true}
         aria-label={`To chat with ${getFullName(companion)}`}
         onClick={handleChat}
         ref={buttonRef}
       >
         Chat
-      </button>
+      </Link>
     </li>
   );
 }

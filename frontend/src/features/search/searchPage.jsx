@@ -66,7 +66,8 @@ function SearchPage() {
         ></i>
         <h2 className={styles["search-page__empty-title"]}>Search Users</h2>
         <p className={styles["search-page__empty-desc"]}>
-          Type a name, id or username in the field above to start searching.
+          Type a first name, id or username in the field above to start
+          searching.
         </p>
       </div>
     );

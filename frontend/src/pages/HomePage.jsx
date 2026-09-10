@@ -15,7 +15,7 @@ import Sidebar from "../features/sidebar/Sidebar.jsx";
 
 function HomePage() {
   const { user, setUser, guestMode, isAuthenticated, logout } = useAuth();
-  const { setPosts, posts, setSettings } = useData();
+  const { setPosts, posts, setSettings, clearDataCache } = useData();
   const loading = (!guestMode && !user) || posts?.length === 0;
 
   useEffect(() => {
@@ -36,6 +36,7 @@ function HomePage() {
       } catch (err) {
         if (err.action === "DELETE_TOKEN") {
           logout();
+          clearDataCache();
         }
         console.error(err);
       }

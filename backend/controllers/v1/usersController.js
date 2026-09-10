@@ -132,19 +132,11 @@ async function $getMyChats(req, res, next) {
                 content: true,
                 createdAt: true,
                 isRead: true,
-                author: {
-                  select: {
-                    id: true,
-                    avatarUrl: true,
-                    firstName: true,
-                    lastName: true,
-                    username: true,
-                  },
-                },
+                authorId: true,
               },
               take: 1,
               orderBy: {
-                createdAt: "asc",
+                createdAt: "desc",
               },
             },
             _count: {
@@ -158,6 +150,9 @@ async function $getMyChats(req, res, next) {
               },
             },
           },
+          orderBy: {
+            lastUpdate: "desc",
+          },
         },
       },
     });
@@ -169,10 +164,8 @@ async function $getMyChats(req, res, next) {
     const { chats } = user;
     chats.forEach((chat) => {
       chat.companion = chat.users[0];
-      chat.lastMessage = chat.messages.length > 0 ? chat.messages[0] : null;
       chat.unreadMessages = chat._count.messages;
       delete chat._count;
-      delete chat.messages;
       delete chat.users;
     });
 
@@ -728,7 +721,7 @@ async function $deleteFriend(req, res, next) {
       return res.status(404).json({ message: "Friend not found" });
     }
 
-    const user = await prisma_client.user.update({
+    await prisma_client.user.update({
       where: {
         id: userId,
       },

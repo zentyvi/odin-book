@@ -5,9 +5,11 @@ import { getFullName } from "../../../../utilis/helpers.js";
 
 function Chat({ chat }) {
   const { user } = useAuth();
-  const { companion, lastMessage, id: chatId } = chat;
+  const { companion, messages } = chat;
+  const lastMessage =
+    typeof messages !== "undefined" ? messages[messages.length - 1] : null;
   const isRead = lastMessage?.isRead;
-  const isMyMessage = lastMessage?.author?.id === user?.id;
+  const isMyMessage = lastMessage?.authorId === user?.id;
   const hasImage = Boolean(lastMessage?.imageUrl);
   const hasContent = Boolean(lastMessage?.content);
 
@@ -30,7 +32,7 @@ function Chat({ chat }) {
 
   return (
     <li>
-      <Link to={`/chats/${chatId}`}>
+      <Link to={`/chats/${companion?.username || companion?.id}`}>
         <Avatar user={companion} />
         <div>
           <header>
