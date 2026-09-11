@@ -4,7 +4,7 @@ import { useAuth } from "../../../../contexts/AuthProvider.jsx";
 import MessagesGroup from "./MessagesGroup.jsx";
 import { useEscape } from "../../../../utilis/helpers.js";
 
-function MessagesFeed({ messages, companion, onMessageDelete }) {
+function MessagesFeed({ messages, companion, onMessageDelete, ref }) {
   const [activeContextMenu, setActiveContextMenu] = useState(null);
   const { user } = useAuth();
   const loading = typeof messages === "undefined";
@@ -75,6 +75,8 @@ function MessagesFeed({ messages, companion, onMessageDelete }) {
           <h3>You don't have any messages yet.</h3>
         </div>
       )}
+      {/* Invisible anchor element for auto-scrolling */}
+      <div ref={ref} />{" "}
     </div>
   );
 }

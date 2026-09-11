@@ -12,9 +12,12 @@ function Chats({ styles = {}, chats }) {
   return (
     <SidebarSection title="Chats" styles={styles}>
       {chats?.length > 0 ? (
-        chats.map((chat) => (
-          <Chat chat={chat} key={chat?.id || crypto.randomUUID()} />
-        ))
+        chats.map((chat) => {
+          // if a chat doesn't have an id, it means that a user doesn't have a chat with them
+          if (!chat.id) return;
+
+          return <Chat chat={chat} key={chat?.id || crypto.randomUUID()} />;
+        })
       ) : (
         <li>
           <i>You don't have any chats yet.</i>

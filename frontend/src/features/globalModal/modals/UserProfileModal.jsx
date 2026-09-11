@@ -46,7 +46,7 @@ function UserProfileModal({ data, closeModal }) {
           onClick={() => closeModal()}
           state={user}
         >
-          <Avatar user={user} />
+          <Avatar user={user} showStatus={!isMyProfile} />
         </Link>
         <div>
           <div>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   filterData,
   getMyLocalSettings,
@@ -8,6 +8,7 @@ import {
 } from "../utilis/helpers.js";
 import { updateMySettings } from "../api/functions/users.js";
 import { useAuth } from "./AuthProvider.jsx";
+import { socket } from "../api/connection.js";
 
 const DataContext = createContext(null);
 
@@ -175,13 +176,54 @@ export function DataProvider({ children }) {
     setChats((prev) =>
       prev.map((chat) => {
         if (chat.id === chatId) {
-          console.log("FOUND CHAT");
           return { ...chat, messages: filterData(chat.messages, messageId) };
         }
         return chat;
       }),
     );
   };
+
+  const _readMessages = (data) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === data.chatId) {
+          const prevMessages = chat.messages || [];
+          const newMessages = prevMessages.map((message) => {
+            if (message?.authorId !== data?.userId) {
+              return { ...message, isRead: true };
+            }
+            return message;
+          });
+          return { ...chat, messages: newMessages };
+        }
+        return chat;
+      }),
+    );
+  };
+
+  useEffect(() => {
+    socket.on("new_message", (data) => {
+      if (data.isNewChat) {
+        updateChatInCache(data?.chat);
+        return;
+      }
+      moveChatToFront(data.chatId);
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id === data.chatId) {
+            const prevMessages = chat.messages || [];
+            return { ...chat, messages: [...prevMessages, data] };
+          }
+          return chat;
+        }),
+      );
+    });
+
+    socket.on("read_chat", (data) => {
+      _readMessages(data);
+    });
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <DataContext.Provider

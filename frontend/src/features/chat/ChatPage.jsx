@@ -1,34 +1,53 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { getChat } from "../../api/functions/chats.js";
-import { filterData, useTitle } from "../../utilis/helpers.js";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { getChat, markChatAsRead } from "../../api/functions/chats.js";
+import { deleteMessage } from "../../api/functions/messages.js";
+import { useTitle } from "../../utilis/helpers.js";
+import { useData } from "../../contexts/DataProvider.jsx";
+import { useAuth } from "../../contexts/AuthProvider.jsx";
+import { socket } from "../../api/connection.js";
 import ChatHeader from "./components/ChatHeader.jsx";
-import Loader from "../../components/Loader.jsx";
 import MessagesFeed from "./components/messages/MessagesFeed.jsx";
 import NewMessageForm from "./components/NewMessageForm.jsx";
-import { useData } from "../../contexts/DataProvider.jsx";
-import { deleteMessage } from "../../api/functions/messages.js";
+import Loader from "../../components/Loader.jsx";
+import { useModal } from "../../contexts/ModalProvider.jsx";
 
 function ChatPage() {
   const { username } = useParams();
-  const { moveChatToFront, updateChatInCache, removeMessageFromCache } =
-    useData();
-  const [chat, setChat] = useState(null);
+  const {
+    moveChatToFront,
+    updateChatInCache,
+    removeChatFromCache,
+    removeMessageFromCache,
+    getChatFromCache,
+  } = useData();
+  const { isAuthenticated, user } = useAuth();
+  const { sendNotification } = useModal();
+  const chat = getChatFromCache(username);
   const [loading, setLoading] = useState(true);
   const messages = chat?.messages || [];
   const companion = chat?.companion;
   const canTextThem = chat?.whoCanText === "EVERYONE" || chat?.areFriends;
+  const messagesRef = useRef();
+  const navigate = useNavigate();
   useTitle(companion?.username || "Chat");
 
   useEffect(() => {
+    if (
+      !isAuthenticated ||
+      username === user?.username ||
+      username === user?.id
+    ) {
+      navigate("/", { replace: true });
+    }
     const fetchChat = async () => {
       try {
         const result = await getChat(username);
+        updateChatInCache(result);
         if (result?.id) {
           // check if has a chat id, so we know does the user have a chat with this user
-          updateChatInCache(result);
+          await markChatAsRead(username);
         }
-        setChat(result);
       } catch (err) {
         console.error(err);
       } finally {
@@ -36,17 +55,46 @@ function ChatPage() {
       }
     };
 
+    const handleRead = async () => {
+      await markChatAsRead(username);
+    };
+
+    socket.on("new_message", handleRead);
+
+    const handleDeleteChat = (data) => {
+      console.log(data.username, username);
+      if (data.username === username) {
+        console.log("SUCCEED");
+
+        navigate("/", { replace: true });
+        sendNotification(
+          "Error",
+          "Your companion has deleted this chat",
+          "ERROR",
+        );
+      }
+      removeChatFromCache(data.chatId);
+    };
+
+    socket.on("delete_chat", handleDeleteChat);
+
     fetchChat();
+    return () => {
+      socket.off("new_message", handleRead);
+      socket.off("delete_chat", handleDeleteChat);
+    };
     // eslint-disable-next-line
   }, [username]);
+
+  /* Automatically scroll to the latest message when messages update */
+  useEffect(() => {
+    messagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages?.length]);
 
   const onMessageDelete = async (messageId) => {
     try {
       await deleteMessage(messageId);
       removeMessageFromCache(chat.id, messageId);
-      setChat((prev) => {
-        return { ...prev, messages: filterData(prev.messages, messageId) };
-      });
     } catch (err) {
       console.error(err);
     }
@@ -63,26 +111,29 @@ function ChatPage() {
 
     updateChatInCache(updatedChat);
     moveChatToFront(updatedChat.id);
-    setChat(updatedChat);
   };
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <main>
-      <ChatHeader chat={chat} />
-      <MessagesFeed
-        messages={messages}
-        companion={companion}
-        onMessageDelete={onMessageDelete}
-      />
-      <NewMessageForm
-        companion={companion}
-        canTextThem={canTextThem}
-        onMessageSend={onMessageSend}
-      />
+      {companion && <ChatHeader chat={chat} />}
+
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <MessagesFeed
+            messages={messages}
+            companion={companion}
+            onMessageDelete={onMessageDelete}
+            ref={messagesRef}
+          />
+          <NewMessageForm
+            companion={companion}
+            canTextThem={canTextThem}
+            onMessageSend={onMessageSend}
+          />
+        </>
+      )}
     </main>
   );
 }

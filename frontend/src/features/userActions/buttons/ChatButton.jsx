@@ -2,14 +2,22 @@ import { useRef } from "react";
 import { Link } from "react-router";
 import { getFullName } from "../../../utilis/helpers.js";
 import { useModal } from "../../../contexts/ModalProvider.jsx";
+import { useAuth } from "../../../contexts/AuthProvider.jsx";
 
 function ChatButton({ companion }) {
-  const { closeModal } = useModal();
+  const { isAuthenticated } = useAuth();
+  const { closeModal, sendNotification } = useModal();
   const buttonRef = useRef();
 
-  const handleChat = async () => {
+  const handleChat = async (e) => {
     const { current: button } = buttonRef;
     try {
+      if (!isAuthenticated) {
+        e.preventDefault();
+        sendNotification("Error", "Please log in first to chat", "ERROR");
+        return;
+      }
+
       button.disabled = true;
       button.textContent = "Starting chat...";
       closeModal();

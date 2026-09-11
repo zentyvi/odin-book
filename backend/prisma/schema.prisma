@@ -34,6 +34,7 @@ model User {
   sentRequests     FriendRequest[] @relation("Sender")
   receivedRequests FriendRequest[] @relation("Receiver")
   createdAt        DateTime        @default(now())
+  lastSeen         DateTime?
 }
 
 enum UserType {

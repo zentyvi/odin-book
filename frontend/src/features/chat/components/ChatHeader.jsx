@@ -57,7 +57,7 @@ function ChatHeader({ chat }) {
           onClick={() => openModal("USER_PREVIEW", companion)}
           aria-label="Open user's profile"
         >
-          <Avatar user={companion} showStatus={false} />
+          <Avatar user={companion} showStatus={true} />
           <div>
             <h2>{fullName}</h2>
             <span>pepe</span>

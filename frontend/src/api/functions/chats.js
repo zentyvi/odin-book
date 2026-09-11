@@ -53,4 +53,24 @@ async function deleteChat(companion_id_or_username) {
   return result;
 }
 
-export { getChat, sendMessage, deleteChat };
+async function markChatAsRead(companion_id_or_username) {
+  const bearer = getBearer();
+  const response = await fetch(
+    `${api_url}/chats/${companion_id_or_username}/read`,
+    {
+      method: "PUT",
+      headers: {
+        authorization: bearer,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete chat");
+  }
+
+  const result = await response.json();
+  return result;
+}
+
+export { getChat, sendMessage, deleteChat, markChatAsRead };

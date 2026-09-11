@@ -38,7 +38,6 @@ function Notification({ notification }) {
         </div>
         <button aria-label="Close notification" onClick={handleClose}>
           <i className="bi bi-x-lg" />
-          <span>{id}</span>
         </button>
       </header>
       <main>

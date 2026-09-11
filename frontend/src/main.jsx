@@ -1,5 +1,4 @@
 import { RouterProvider } from "react-router/dom";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -12,15 +11,13 @@ import router from "./routes.jsx";
 const root = createRoot(document.getElementById("root"));
 
 root.render(
-  <StrictMode>
-    <AuthProvider>
-      <DataProvider>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          <ModalProvider>
-            <RouterProvider router={router} />
-          </ModalProvider>
-        </GoogleOAuthProvider>
-      </DataProvider>
-    </AuthProvider>
-  </StrictMode>,
+  <AuthProvider>
+    <DataProvider>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <ModalProvider>
+          <RouterProvider router={router} />
+        </ModalProvider>
+      </GoogleOAuthProvider>
+    </DataProvider>
+  </AuthProvider>,
 );

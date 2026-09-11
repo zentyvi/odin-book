@@ -2,7 +2,11 @@ import { Connection } from "pg";
 import { prisma_client } from "../../lib/prisma.js";
 import { protectRoute } from "../../middlewares/auth.js";
 
-async function _findChat(companion_id_or_username, userId) {
+async function _findChat(
+  companion_id_or_username,
+  userId,
+  select = { id: true },
+) {
   return await prisma_client.chat.findFirst({
     where: {
       AND: [
@@ -20,9 +24,16 @@ async function _findChat(companion_id_or_username, userId) {
       ],
     },
 
-    select: {
-      id: true,
+    select: select,
+  });
+}
+
+async function _findUser(user_id_or_username, select = { id: true }) {
+  return await prisma_client.user.findFirst({
+    where: {
+      OR: [{ id: user_id_or_username }, { username: user_id_or_username }],
     },
+    select: select,
   });
 }
 
@@ -31,31 +42,24 @@ async function $getChat(req, res, next) {
     const userId = req?.user?.id;
     const companion_id_or_username = req.params?.user;
 
-    const companion = await prisma_client.user.findFirst({
-      where: {
-        OR: [
-          { id: companion_id_or_username },
-          { username: companion_id_or_username },
-        ],
-      },
-      select: {
-        id: true,
-        avatarUrl: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        settings: {
-          select: {
-            whoCanTextMe: true,
-          },
+    const companion = await _findUser(companion_id_or_username, {
+      id: true,
+      avatarUrl: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      lastSeen: true,
+      settings: {
+        select: {
+          whoCanTextMe: true,
         },
-        friends: {
-          where: {
-            id: userId,
-          },
-          select: {
-            id: true,
-          },
+      },
+      friends: {
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
         },
       },
     });
@@ -166,6 +170,7 @@ async function $sendMessage(req, res, next) {
     }
 
     let chat = await _findChat(companion_id_or_username, userId);
+    const hasChat = Boolean(chat);
 
     if (!chat) {
       chat = await prisma_client.chat.create({
@@ -202,6 +207,86 @@ async function $sendMessage(req, res, next) {
       },
     });
 
+    const { io } = req;
+
+    if (hasChat) {
+      io.to(`user_${companion.id}`).emit("new_message", {
+        ...newMessage,
+        authorId: userId,
+        content: message,
+      });
+    } else {
+      const me = await _findUser(userId, {
+        id: true,
+        avatarUrl: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        lastSeen: true,
+        settings: {
+          select: {
+            whoCanTextMe: true,
+          },
+        },
+        friends: {
+          where: {
+            id: companion.id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      });
+
+      const newChat = await _findChat(companion_id_or_username, userId, {
+        id: true,
+        messages: {
+          select: {
+            id: true,
+            content: true,
+            imageUrl: true,
+            createdAt: true,
+            isRead: true,
+            authorId: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                NOT: { authorId: companion.id },
+                isRead: false,
+              },
+            },
+          },
+        },
+      });
+
+      const areFriends = me.friends.length > 0;
+      const whoCanText = me.settings.whoCanTextMe;
+      delete me.settings;
+      delete me.friends;
+
+      const unreadMessages = newChat?._count?.messages || 0;
+      delete newChat?._count;
+
+      const formattedChatForRecipient = {
+        ...newChat,
+        companion: me,
+        areFriends,
+        whoCanText,
+        unreadMessages,
+      };
+
+      io.to(`user_${companion.id}`).emit("new_message", {
+        isNewChat: true,
+        chat: formattedChatForRecipient,
+      });
+    }
+
     res.json(newMessage);
   } catch (err) {
     next(err);
@@ -213,7 +298,14 @@ const sendMessage = [protectRoute, $sendMessage];
 async function $deleteChat(req, res, next) {
   try {
     const userId = req?.user?.id;
+    const myUsername = req?.user?.username;
     const companion_id_or_username = req.params?.user;
+
+    const companion = await _findUser(companion_id_or_username);
+
+    if (!companion) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const chat = await _findChat(companion_id_or_username, userId);
 
     if (!chat) {
@@ -226,6 +318,12 @@ async function $deleteChat(req, res, next) {
       },
     });
 
+    const { io } = req;
+    io.to(`user_${companion.id}`).emit("delete_chat", {
+      username: myUsername,
+      chatId: chat.id,
+    });
+
     res.json({ message: "Succeed" });
   } catch (err) {
     next(err);
@@ -234,10 +332,55 @@ async function $deleteChat(req, res, next) {
 
 const deleteChat = [protectRoute, $deleteChat];
 
+async function $markChatAsRead(req, res, next) {
+  try {
+    const userId = req?.user?.id;
+    const companion_id_or_username = req.params?.user;
+    const chat = await _findChat(companion_id_or_username);
+
+    const companion = await _findUser(companion_id_or_username);
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    await prisma_client.chat.update({
+      where: {
+        id: chat.id,
+      },
+      data: {
+        messages: {
+          updateMany: {
+            where: {
+              NOT: { authorId: userId },
+            },
+            data: {
+              isRead: true,
+            },
+          },
+        },
+      },
+    });
+
+    const { io } = req;
+    io.to(`user_${companion.id}`).emit("read_chat", {
+      chatId: chat.id,
+      userId,
+    });
+
+    res.json({ message: "Succeed" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const markChatAsRead = [protectRoute, $markChatAsRead];
+
 const chatsController = {
   getChat,
   sendMessage,
   deleteChat,
+  markChatAsRead,
 };
 
 export default chatsController;

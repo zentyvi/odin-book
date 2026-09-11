@@ -83,7 +83,7 @@ function UserProfilePage() {
         <div>
           <div>
             <div>
-              <Avatar user={user} />
+              <Avatar user={user} showStatus={!isMyProfile} />
               <div>
                 <h2>{fullName}</h2>
                 <span>@{user?.username}</span>

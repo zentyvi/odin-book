@@ -427,6 +427,7 @@ async function getUserPreview(req, res, next) {
         firstName: true,
         lastName: true,
         username: true,
+        lastSeen: true,
         receivedRequests: {
           where: {
             senderId: requestAuthorId,
@@ -484,6 +485,7 @@ async function getUserProfile(req, res, next) {
         firstName: true,
         lastName: true,
         username: true,
+        lastSeen: true,
         receivedRequests: isMyProfile
           ? {
               where: {

@@ -1,10 +1,16 @@
 import { Link } from "react-router";
 import Avatar from "../../../../components/Avatar.jsx";
 import { useAuth } from "../../../../contexts/AuthProvider.jsx";
-import { getFullName } from "../../../../utilis/helpers.js";
+import {
+  getCalendarTime,
+  getFullName,
+  getShortTime,
+} from "../../../../utilis/helpers.js";
+import { useData } from "../../../../contexts/DataProvider.jsx";
 
 function Chat({ chat }) {
   const { user } = useAuth();
+  const { settings } = useData();
   const { companion, messages } = chat;
   const lastMessage =
     typeof messages !== "undefined" ? messages[messages.length - 1] : null;
@@ -33,7 +39,7 @@ function Chat({ chat }) {
   return (
     <li>
       <Link to={`/chats/${companion?.username || companion?.id}`}>
-        <Avatar user={companion} />
+        <Avatar user={companion} showStatus={true} />
         <div>
           <header>
             <div>
@@ -49,15 +55,25 @@ function Chat({ chat }) {
             {hasContent || hasImage ? (
               <>
                 <div>{previewMessage}</div>
-                {isMyMessage && (
-                  <div>
-                    {isRead ? (
-                      <i className="bi bi-check-all" />
-                    ) : (
-                      <i className="bi bi-check" />
+                <div>
+                  <span
+                    title={getCalendarTime(
+                      lastMessage?.createdAt,
+                      settings?.is24h,
                     )}
-                  </div>
-                )}
+                  >
+                    {getShortTime(lastMessage?.createdAt, settings?.is24h)}
+                  </span>
+                  {isMyMessage && (
+                    <div>
+                      {isRead ? (
+                        <i className="bi bi-check-all" />
+                      ) : (
+                        <i className="bi bi-check" />
+                      )}
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <i>No messages yet</i>

@@ -12,11 +12,18 @@ import {
 import Header from "../features/header/Header.jsx";
 import Loader from "../components/Loader";
 import Sidebar from "../features/sidebar/Sidebar.jsx";
+import { register_user } from "../api/connection.js";
 
 function HomePage() {
   const { user, setUser, guestMode, isAuthenticated, logout } = useAuth();
   const { setPosts, posts, setSettings, clearDataCache } = useData();
   const loading = (!guestMode && !user) || posts?.length === 0;
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      register_user(user?.id);
+    }
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     const main = async () => {

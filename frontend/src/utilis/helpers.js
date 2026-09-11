@@ -24,13 +24,25 @@ export function getCalendarTime(date, is24h = true) {
   return moment(date).calendar(null, calendarConfig);
 }
 
+export function getShortTime(date, is24h = true) {
+  if (date === undefined) {
+    return "N/A";
+  }
+
+  const timeFormat = is24h ? "HH:mm" : "hh:mm A";
+
+  return moment(date).format(timeFormat);
+}
+
 export function formatNumber(number) {
   number = Number(number);
   let formatedNumber = number;
   if (number > 1_000_000) {
     formatedNumber = `${(number / 1_000_000).toFixed(1)}M`;
   } else if (number > 1000 && number < 1_000_000) {
-    formatedNumber = `${(number / 1000).toFixed(1)}K`;
+    const k = Math.floor(number / 1000);
+    const rest = number % 1000;
+    formatedNumber = `${k},${rest}`;
   }
 
   return formatedNumber;

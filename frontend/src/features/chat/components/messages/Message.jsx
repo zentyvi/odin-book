@@ -1,6 +1,7 @@
 import FocusLock from "react-focus-lock";
-import { getCalendarTime } from "../../../../utilis/helpers.js";
+import { getCalendarTime, getShortTime } from "../../../../utilis/helpers.js";
 import { useData } from "../../../../contexts/DataProvider.jsx";
+import { useAuth } from "../../../../contexts/AuthProvider.jsx";
 
 function Message({
   onMessageDelete,
@@ -10,7 +11,10 @@ function Message({
   message,
 }) {
   const { settings } = useData();
+  const { user } = useAuth();
+  const isMyMessage = message?.authorId === user?.id;
   const isContextMenuOpen = activeContextMenu === message.id;
+  const { isRead } = message;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -59,7 +63,20 @@ function Message({
     >
       <div>
         <p>{message?.content}</p>
-        <span>{getCalendarTime(message?.createdAt, settings.is24h)}</span>
+        <div>
+          <span title={getCalendarTime(message?.createdAt, settings.is24h)}>
+            {getShortTime(message?.createdAt, settings.is24h)}
+          </span>
+          {isMyMessage && (
+            <div>
+              {isRead ? (
+                <i className="bi bi-check-all" />
+              ) : (
+                <i className="bi bi-check" />
+              )}
+            </div>
+          )}
+        </div>
       </div>
       {isContextMenuOpen && acionsMenu}
     </li>
