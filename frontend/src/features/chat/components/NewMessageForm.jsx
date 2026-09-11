@@ -66,6 +66,7 @@ function NewMessageForm({ companion, canTextThem, onMessageSend }) {
       )}
       <div className={styles["message-form__field-wrapper"]}>
         <textarea
+          id="message"
           ref={textareaRef}
           className={styles["message-form__textarea"]}
           placeholder={`Message @${username}...`}
@@ -75,6 +76,7 @@ function NewMessageForm({ companion, canTextThem, onMessageSend }) {
           rows={1}
           required
           disabled={!canTextThem}
+          autoComplete="off"
         />
 
         <button

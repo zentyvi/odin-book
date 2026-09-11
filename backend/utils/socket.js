@@ -4,24 +4,20 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 
 async function updateLastSeen(userId) {
-  try {
-    const user = await prisma_client.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        lastSeen: new Date(),
-      },
-      select: {
-        id: true,
-      },
-    });
+  const user = await prisma_client.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      lastSeen: new Date(),
+    },
+    select: {
+      id: true,
+    },
+  });
 
-    if (!user) {
-      throw new Error("User not found");
-    }
-  } catch (err) {
-    throw new Error(`Failed to update last seen row: ${err.message}`);
+  if (!user) {
+    throw new Error("User not found");
   }
 }
 
@@ -29,7 +25,7 @@ const useSocket = (app) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
     },
   });

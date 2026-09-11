@@ -10,6 +10,10 @@ async function main() {
   await prisma_client.$transaction([
     prisma_client.comment.deleteMany(),
     prisma_client.post.deleteMany(),
+    prisma_client.message.deleteMany(),
+    prisma_client.chat.deleteMany(),
+    prisma_client.friendRequest.deleteMany(),
+    prisma_client.settings.deleteMany(),
     prisma_client.user.deleteMany(),
   ]);
 

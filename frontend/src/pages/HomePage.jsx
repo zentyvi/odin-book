@@ -39,6 +39,7 @@ function HomePage() {
           updateLocalSettings(actualSettings);
           setSettings(actualSettings);
         }
+
         setUser(result);
       } catch (err) {
         if (err.action === "DELETE_TOKEN") {

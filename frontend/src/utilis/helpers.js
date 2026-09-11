@@ -34,6 +34,30 @@ export function getShortTime(date, is24h = true) {
   return moment(date).format(timeFormat);
 }
 
+export function checkIfSameDay(date1, date2) {
+  if (!date1 || !date2) {
+    return false;
+  }
+  const moment1 = moment(date1);
+  const moment2 = moment(date2);
+  return moment1.isSame(moment2, "day");
+}
+
+export function createDateMessage(date) {
+  const moment1 = moment(date);
+  const moment2 = moment();
+  const isSameDay = moment1.isSame(moment2, "day");
+  const isSameYear = moment1.isSame(moment2, "year");
+
+  if (isSameDay) {
+    return "Today";
+  }
+
+  const format = isSameYear ? "MMMM D" : "YYYY, MMMM D";
+
+  return moment(date).format(format);
+}
+
 export function formatNumber(number) {
   number = Number(number);
   let formatedNumber = number;

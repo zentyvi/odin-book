@@ -62,10 +62,7 @@ function ChatPage() {
     socket.on("new_message", handleRead);
 
     const handleDeleteChat = (data) => {
-      console.log(data.username, username);
       if (data.username === username) {
-        console.log("SUCCEED");
-
         navigate("/", { replace: true });
         sendNotification(
           "Error",
@@ -116,7 +113,6 @@ function ChatPage() {
   return (
     <main>
       {companion && <ChatHeader chat={chat} />}
-
       {loading ? (
         <Loader />
       ) : (
@@ -125,7 +121,6 @@ function ChatPage() {
             messages={messages}
             companion={companion}
             onMessageDelete={onMessageDelete}
-            ref={messagesRef}
           />
           <NewMessageForm
             companion={companion}
@@ -134,6 +129,8 @@ function ChatPage() {
           />
         </>
       )}
+      {/* Invisible anchor element for auto-scrolling */}
+      <div ref={messagesRef} />{" "}
     </main>
   );
 }

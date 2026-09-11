@@ -130,33 +130,29 @@ async function $sendMessage(req, res, next) {
     const companion_id_or_username = req.params?.user;
     const { message } = req.body;
 
-    const companion = await prisma_client.user.findFirst({
-      where: {
-        OR: [
-          { id: companion_id_or_username },
-          { username: companion_id_or_username },
-        ],
-      },
-      select: {
-        id: true,
-        settings: {
-          select: {
-            whoCanTextMe: true,
-          },
+    const companion = await _findUser(companion_id_or_username, {
+      id: true,
+      settings: {
+        select: {
+          whoCanTextMe: true,
         },
-        friends: {
-          where: {
-            id: userId,
-          },
-          select: {
-            id: true,
-          },
+      },
+      friends: {
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
         },
       },
     });
 
     if (!companion) {
       return res.status(404).json({ message: "Companion not found" });
+    }
+
+    if (companion.id === userId) {
+      return res.status(400).json({ message: "Can't text yourself" });
     }
 
     const areFriends = companion.friends.length > 0;
