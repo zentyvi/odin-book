@@ -165,10 +165,11 @@ function EditHeader() {
 
       <div className={styles["profile-header__info"]}>
         <span className={styles["profile-header__id"]}>
-          ID: #{user?.id || "N/A"}
+          ID: {user?.id || "N/A"}
         </span>
         <span className={styles["profile-header__created"]}>
-          Member since: {getCalendarTime(user?.createdAt, settings?.is24h)}
+          Member since:{" "}
+          {getCalendarTime(user?.createdAt, settings?.is24h).toLowerCase()}
         </span>
       </div>
     </div>

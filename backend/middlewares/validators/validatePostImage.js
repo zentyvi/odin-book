@@ -5,9 +5,6 @@ async function validatePostImage(req, res, next) {
 
   // Execute multer manually to intercept its errors directly
   postImageHandler(req, res, (err) => {
-    if (!req?.file) {
-      next();
-    }
     // Check if multer or fileFilter threw an error
     if (err) {
       let errorMessage = err.message;

@@ -7,7 +7,7 @@ postsRoute.get("/", postsController.getFeed);
 postsRoute.post("/", postsController.createPost);
 postsRoute.get("/:postId", postsController.getSinglePost);
 postsRoute.delete("/:postId", postsController.deletePost);
-postsRoute.post("/:postId/like", postsController.likePost);
-postsRoute.post("/:postId/comment", postsController.newCommentPost);
+postsRoute.put("/:postId/like", postsController.likePost);
+postsRoute.put("/:postId/comment", postsController.newCommentPost);
 
 export default postsRoute;

@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { filterData, mergeData } from "../utilis/helpers.js";
+import { socket } from "../api/connection.js";
 
 const AuthContext = createContext(null);
 
@@ -70,6 +71,32 @@ export function AuthProvider({ children }) {
       };
     });
   };
+
+  useEffect(() => {
+    socket.on("friend_request", (newRequest) => {
+      setUser((prev) => {
+        const oldRequests = prev?.receivedRequests || [];
+        return {
+          ...prev,
+          receivedRequests: [...oldRequests, newRequest],
+        };
+      });
+    });
+
+    socket.on("update_status", (data) => {
+      const { userId, isOnline } = data;
+      setUser((prev) => {
+        const prevFriends = prev.friends || [];
+        const newFriends = prevFriends.map((f) => {
+          if (f.id === userId) {
+            return { ...f, isOnline };
+          }
+          return f;
+        });
+        return { ...prev, friends: newFriends };
+      });
+    });
+  }, []);
 
   return (
     <AuthContext.Provider

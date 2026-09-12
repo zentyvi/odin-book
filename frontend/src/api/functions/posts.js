@@ -35,11 +35,9 @@ async function getSinglePost(postId) {
 }
 
 async function likePost(postId) {
-  const token = localStorage.getItem("token");
-
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/posts/${postId}/like`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       authorization: bearer,
     },
@@ -54,11 +52,9 @@ async function likePost(postId) {
 }
 
 async function newComment(postId, comment) {
-  const token = localStorage.getItem("token");
-
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/posts/${postId}/comment`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       authorization: bearer,
       "Content-type": "application/json",
@@ -75,9 +71,7 @@ async function newComment(postId, comment) {
 }
 
 async function createPost(formData) {
-  const token = localStorage.getItem("token");
-
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/posts`, {
     method: "POST",
     headers: {
@@ -95,9 +89,7 @@ async function createPost(formData) {
 }
 
 async function deletePost(postId) {
-  const token = localStorage.getItem("token");
-
-  const bearer = `Bearer ${token}`;
+  const bearer = getBearer();
   const response = await fetch(`${api_url}/posts/${postId}`, {
     method: "DELETE",
     headers: {

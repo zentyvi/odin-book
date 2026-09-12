@@ -9,17 +9,17 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
+app.use(cors());
+
+app.use(json());
+app.use(urlencoded({ extended: true }));
+
 const { io, server } = useSocket(app);
 
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
-
-app.use(cors());
-
-app.use(json());
-app.use(urlencoded({ extended: true }));
 
 app.use(authorizeUser);
 app.use("/api/v1", v1Route);

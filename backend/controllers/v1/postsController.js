@@ -8,9 +8,29 @@ import cloudinaryPublic from "../../utils/cloudinary.js";
 
 async function getFeed(req, res, next) {
   try {
-    const userId = req?.user?.id || "";
+    const userId = req?.user?.id || null;
+
+    let friendIdsSet = new Set();
+
+    if (userId) {
+      const userWithFriends = await prisma_client.user.findUnique({
+        where: { id: userId },
+        select: {
+          friends: {
+            select: { id: true },
+          },
+        },
+      });
+
+      if (userWithFriends?.friends) {
+        friendIdsSet = new Set(userWithFriends.friends.map((f) => f.id));
+      }
+    }
 
     const posts = await prisma_client.post.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
       select: {
         id: true,
         imageUrl: true,
@@ -31,18 +51,38 @@ async function getFeed(req, res, next) {
             likedBy: true,
           },
         },
-        likedBy: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: userId,
-          },
-        },
+        likedBy: userId
+          ? {
+              select: { id: true },
+              where: { id: userId },
+            }
+          : false,
       },
     });
 
-    res.status(200).json(posts);
+    if (!userId) {
+      return res.status(200).json(posts);
+    }
+
+    const friendPosts = [];
+    const myPosts = [];
+    const otherPosts = [];
+
+    posts.forEach((post) => {
+      const authorId = post.author.id;
+
+      if (friendIdsSet.has(authorId)) {
+        friendPosts.push(post);
+      } else if (authorId === userId) {
+        myPosts.push(post);
+      } else {
+        otherPosts.push(post);
+      }
+    });
+
+    const sortedPosts = [...friendPosts, ...myPosts, ...otherPosts];
+
+    res.status(200).json(sortedPosts);
   } catch (err) {
     next(err);
   }
@@ -234,6 +274,7 @@ async function $newCommentPost(req, res, next) {
 const newCommentPost = [protectRoute, validateComment, $newCommentPost];
 
 async function $createPost(req, res, next) {
+  console.log(res);
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -267,7 +308,7 @@ async function $createPost(req, res, next) {
       },
     });
 
-    res.json(post);
+    res.status(200).json(post);
   } catch (err) {
     next(err);
   }

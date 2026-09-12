@@ -137,6 +137,17 @@ export function DataProvider({ children }) {
     return chat || null;
   };
 
+  const readChat = (chatId) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === chatId) {
+          return { ...chat, unreadMessages: 0 };
+        }
+        return chat;
+      }),
+    );
+  };
+
   const updateChatsInCache = (newChats) => {
     setChats((prev) => {
       return mergeData(prev, newChats);
@@ -203,16 +214,21 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     socket.on("new_message", (data) => {
+      const { unreadMessages, chatId } = data;
       if (data.isNewChat) {
         updateChatInCache(data?.chat);
         return;
       }
-      moveChatToFront(data.chatId);
+      moveChatToFront(chatId);
       setChats((prev) =>
         prev.map((chat) => {
-          if (chat.id === data.chatId) {
+          if (chat.id === chatId) {
             const prevMessages = chat.messages || [];
-            return { ...chat, messages: [...prevMessages, data] };
+            return {
+              ...chat,
+              messages: [...prevMessages, data],
+              unreadMessages,
+            };
           }
           return chat;
         }),
@@ -222,7 +238,33 @@ export function DataProvider({ children }) {
     socket.on("read_chat", (data) => {
       _readMessages(data);
     });
-    // eslint-disable-next-line
+
+    socket.on("delete_message", (data) => {
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id === data.chatId) {
+            const prevMessages = chat.messages || [];
+            return {
+              ...chat,
+              messages: filterData(prevMessages, data.messageId),
+            };
+          }
+          return chat;
+        }),
+      );
+    });
+
+    socket.on("update_status", (data) => {
+      const { userId, isOnline } = data;
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.companion?.id === userId) {
+            return { ...chat, companion: { ...chat.companion, isOnline } };
+          }
+          return chat;
+        }),
+      );
+    });
   }, []);
 
   return (
@@ -243,6 +285,7 @@ export function DataProvider({ children }) {
         chats,
         setChats,
         getChatFromCache,
+        readChat,
         updateChatsInCache,
         updateChatInCache,
         moveChatToFront,

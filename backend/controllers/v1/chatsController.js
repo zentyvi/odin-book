@@ -49,6 +49,7 @@ async function $getChat(req, res, next) {
       lastName: true,
       username: true,
       lastSeen: true,
+      isOnline: true,
       settings: {
         select: {
           whoCanTextMe: true,
@@ -203,13 +204,27 @@ async function $sendMessage(req, res, next) {
       },
     });
 
-    const { io } = req;
+    res.json(newMessage);
 
+    const { io } = req;
     if (hasChat) {
+      const existingChat = await _findChat(companion_id_or_username, userId, {
+        _count: {
+          select: {
+            messages: {
+              where: {
+                NOT: { authorId: companion.id },
+                isRead: false,
+              },
+            },
+          },
+        },
+      });
       io.to(`user_${companion.id}`).emit("new_message", {
         ...newMessage,
         authorId: userId,
         content: message,
+        unreadMessages: existingChat._count.messages,
       });
     } else {
       const me = await _findUser(userId, {
@@ -219,6 +234,7 @@ async function $sendMessage(req, res, next) {
         lastName: true,
         username: true,
         lastSeen: true,
+        isOnline: true,
         settings: {
           select: {
             whoCanTextMe: true,
@@ -282,8 +298,6 @@ async function $sendMessage(req, res, next) {
         chat: formattedChatForRecipient,
       });
     }
-
-    res.json(newMessage);
   } catch (err) {
     next(err);
   }
@@ -314,13 +328,13 @@ async function $deleteChat(req, res, next) {
       },
     });
 
+    res.json({ message: "Succeed" });
+
     const { io } = req;
     io.to(`user_${companion.id}`).emit("delete_chat", {
       username: myUsername,
       chatId: chat.id,
     });
-
-    res.json({ message: "Succeed" });
   } catch (err) {
     next(err);
   }
@@ -332,7 +346,7 @@ async function $markChatAsRead(req, res, next) {
   try {
     const userId = req?.user?.id;
     const companion_id_or_username = req.params?.user;
-    const chat = await _findChat(companion_id_or_username);
+    const chat = await _findChat(companion_id_or_username, userId);
 
     const companion = await _findUser(companion_id_or_username);
 
@@ -358,13 +372,13 @@ async function $markChatAsRead(req, res, next) {
       },
     });
 
+    res.json({ message: "Succeed" });
+
     const { io } = req;
     io.to(`user_${companion.id}`).emit("read_chat", {
       chatId: chat.id,
       userId,
     });
-
-    res.json({ message: "Succeed" });
   } catch (err) {
     next(err);
   }

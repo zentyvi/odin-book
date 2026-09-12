@@ -14,6 +14,25 @@ async function $deleteMessage(req, res, next) {
         },
       },
       select: {
+        chatId: true,
+        id: true,
+      },
+    });
+
+    const companion = await prisma_client.user.findFirst({
+      where: {
+        id: {
+          not: userId,
+        },
+        chats: {
+          some: {
+            users: { some: { id: userId } },
+            messages: { some: { id: messageId } },
+          },
+        },
+      },
+      select: {
+        username: true,
         id: true,
       },
     });
@@ -29,6 +48,12 @@ async function $deleteMessage(req, res, next) {
     });
 
     res.json({ message: "Succeed" });
+
+    const { io } = req;
+    io.to(`user_${companion.id}`).emit("delete_message", {
+      messageId: message.id,
+      chatId: message.chatId,
+    });
   } catch (err) {
     next(err);
   }

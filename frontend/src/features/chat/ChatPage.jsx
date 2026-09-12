@@ -20,6 +20,7 @@ function ChatPage() {
     removeChatFromCache,
     removeMessageFromCache,
     getChatFromCache,
+    readChat,
   } = useData();
   const { isAuthenticated, user } = useAuth();
   const { sendNotification } = useModal();
@@ -27,7 +28,6 @@ function ChatPage() {
   const [loading, setLoading] = useState(true);
   const messages = chat?.messages || [];
   const companion = chat?.companion;
-  const canTextThem = chat?.whoCanText === "EVERYONE" || chat?.areFriends;
   const messagesRef = useRef();
   const navigate = useNavigate();
   useTitle(companion?.username || "Chat");
@@ -46,6 +46,7 @@ function ChatPage() {
         updateChatInCache(result);
         if (result?.id) {
           // check if has a chat id, so we know does the user have a chat with this user
+          readChat(result?.id);
           await markChatAsRead(username);
         }
       } catch (err) {
@@ -55,7 +56,8 @@ function ChatPage() {
       }
     };
 
-    const handleRead = async () => {
+    const handleRead = async (data) => {
+      readChat(data.chatId);
       await markChatAsRead(username);
     };
 
@@ -122,11 +124,7 @@ function ChatPage() {
             companion={companion}
             onMessageDelete={onMessageDelete}
           />
-          <NewMessageForm
-            companion={companion}
-            canTextThem={canTextThem}
-            onMessageSend={onMessageSend}
-          />
+          <NewMessageForm chat={chat} onMessageSend={onMessageSend} />
         </>
       )}
       {/* Invisible anchor element for auto-scrolling */}

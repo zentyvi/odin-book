@@ -35,6 +35,7 @@ model User {
   receivedRequests FriendRequest[] @relation("Receiver")
   createdAt        DateTime        @default(now())
   lastSeen         DateTime?
+  isOnline         Boolean?
 }
 
 enum UserType {

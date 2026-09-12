@@ -17,6 +17,7 @@ function Message({
   const { isRead } = message;
 
   const handleCopy = async () => {
+    console.log("COPY");
     await navigator.clipboard.writeText(message.content);
     closeContextMenu();
   };
@@ -38,7 +39,7 @@ function Message({
   };
 
   const acionsMenu = (
-    <FocusLock>
+    <FocusLock autoFocus={true}>
       <div onClick={closeContextMenu}>
         <div onClick={(e) => e.stopPropagation()}>
           <ul>
@@ -58,7 +59,11 @@ function Message({
     <li
       onContextMenu={(e) => {
         e.preventDefault();
-        openContextMenu(message.id);
+        const isOpen = activeContextMenu !== null;
+        isOpen ? closeContextMenu() : openContextMenu(message?.id);
+      }}
+      onClick={() => {
+        closeContextMenu();
       }}
     >
       <div>

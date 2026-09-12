@@ -1,6 +1,6 @@
 import { useState } from "react";
 import FocusLock from "react-focus-lock";
-import { getFullName, useEscape } from "../../../utilis/helpers.js";
+import { getFullName, makeStatus, useEscape } from "../../../utilis/helpers.js";
 import Avatar from "../../../components/Avatar.jsx";
 import { useModal } from "../../../contexts/ModalProvider.jsx";
 import { deleteChat } from "../../../api/functions/chats.js";
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 function ChatHeader({ chat }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { openModal } = useModal();
-  const { removeChatFromCache, findChat } = useData();
+  const { removeChatFromCache, findChat, settings } = useData();
   const { companion } = chat;
   const fullName = getFullName(companion);
   const navigate = useNavigate();
@@ -57,10 +57,11 @@ function ChatHeader({ chat }) {
           onClick={() => openModal("USER_PREVIEW", companion)}
           aria-label="Open user's profile"
         >
-          <Avatar user={companion} showStatus={true} />
+          <Avatar user={companion} />
+
           <div>
             <h2>{fullName}</h2>
-            <span>pepe</span>
+            <span>{makeStatus(companion, settings.is24h)}</span>
           </div>
         </button>
       </div>

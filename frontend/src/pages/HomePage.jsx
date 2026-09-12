@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import { getMyInfo, getMySettings } from "../api/functions/users.js";
 import { useAuth } from "../contexts/AuthProvider.jsx";
@@ -15,6 +15,7 @@ import Sidebar from "../features/sidebar/Sidebar.jsx";
 import { register_user } from "../api/connection.js";
 
 function HomePage() {
+  const [isMounted, setIsMounted] = useState(false);
   const { user, setUser, guestMode, isAuthenticated, logout } = useAuth();
   const { setPosts, posts, setSettings, clearDataCache } = useData();
   const loading = (!guestMode && !user) || posts?.length === 0;
@@ -23,7 +24,8 @@ function HomePage() {
     if (isAuthenticated && user) {
       register_user(user?.id);
     }
-  }, [isAuthenticated, user]);
+    // eslint-disable-next-line
+  }, [isAuthenticated, isMounted]);
 
   useEffect(() => {
     const main = async () => {
@@ -47,6 +49,8 @@ function HomePage() {
           clearDataCache();
         }
         console.error(err);
+      } finally {
+        setIsMounted(true);
       }
     };
     main();

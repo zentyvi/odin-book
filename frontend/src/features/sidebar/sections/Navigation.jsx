@@ -6,7 +6,7 @@ function Navigation({ styles = {} }) {
   const links = getNavigationLinks();
   const { pathname: currentPath } = useLocation();
   return (
-    <SidebarSection styles={styles} title="Navigation">
+    <SidebarSection styles={styles} title="Navigation" open={false}>
       {links.map((l) => (
         <li key={l.path}>
           <Link to={l.path} aria-label={l.title} title={l.title}>

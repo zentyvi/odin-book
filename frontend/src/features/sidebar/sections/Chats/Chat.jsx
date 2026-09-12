@@ -11,10 +11,10 @@ import { useData } from "../../../../contexts/DataProvider.jsx";
 function Chat({ chat }) {
   const { user } = useAuth();
   const { settings } = useData();
-  const { companion, messages } = chat;
+  const { companion, messages, unreadMessages } = chat;
   const lastMessage =
     typeof messages !== "undefined" ? messages[messages.length - 1] : null;
-  const isRead = lastMessage?.isRead;
+  const { isRead } = lastMessage;
   const isMyMessage = lastMessage?.authorId === user?.id;
   const hasImage = Boolean(lastMessage?.imageUrl);
   const hasContent = Boolean(lastMessage?.content);
@@ -22,7 +22,7 @@ function Chat({ chat }) {
   const previewMessage = (
     <>
       {hasImage ? (
-        <span aria-label="Message has an attached image">
+        <span aria-label="Attached image">
           <i className="bi bi-image" aria-hidden={true} />
         </span>
       ) : (
@@ -47,7 +47,23 @@ function Chat({ chat }) {
             </div>
             {lastMessage && (
               <div>
-                <span aria-label="Last message was sent at"></span>
+                {isMyMessage && (
+                  <div>
+                    {isRead ? (
+                      <i className="bi bi-check-all" />
+                    ) : (
+                      <i className="bi bi-check" />
+                    )}
+                  </div>
+                )}
+                <span
+                  title={getCalendarTime(
+                    lastMessage?.createdAt,
+                    settings?.is24h,
+                  )}
+                >
+                  {getShortTime(lastMessage?.createdAt, settings?.is24h)}
+                </span>
               </div>
             )}
           </header>
@@ -55,25 +71,13 @@ function Chat({ chat }) {
             {hasContent || hasImage ? (
               <>
                 <div>{previewMessage}</div>
-                <div>
-                  <span
-                    title={getCalendarTime(
-                      lastMessage?.createdAt,
-                      settings?.is24h,
-                    )}
-                  >
-                    {getShortTime(lastMessage?.createdAt, settings?.is24h)}
-                  </span>
-                  {isMyMessage && (
-                    <div>
-                      {isRead ? (
-                        <i className="bi bi-check-all" />
-                      ) : (
-                        <i className="bi bi-check" />
-                      )}
-                    </div>
-                  )}
-                </div>
+                {unreadMessages > 0 && (
+                  <div>
+                    <span aria-label="Unread messages number">
+                      {unreadMessages}
+                    </span>
+                  </div>
+                )}
               </>
             ) : (
               <i>No messages yet</i>

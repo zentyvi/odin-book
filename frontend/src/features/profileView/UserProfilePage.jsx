@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { getUserProfile } from "../../api/functions/users.js";
-import { getFullName, useTitle } from "../../utilis/helpers.js";
+import { getFullName, makeStatus, useTitle } from "../../utilis/helpers.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import Loader from "../../components/Loader.jsx";
 import Avatar from "../../components/Avatar.jsx";
 import UserProfileItems from "./UserProfileItems.jsx";
 import ActionsPanel from "../userActions/ActionsPanel.jsx";
+import { useData } from "../../contexts/DataProvider.jsx";
 
 function UserProfilePage() {
   const location = useLocation();
@@ -14,6 +15,7 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(!user);
   const [selectedSection, setSelectedSection] = useState("POSTS");
   const { username } = useParams();
+  const { settings } = useData();
   const {
     user: currentUser,
     setUser: setCurrentUser,
@@ -44,7 +46,7 @@ function UserProfilePage() {
       items = user?.comments;
       break;
     case "REQUESTS":
-      items = user?.receivedRequests;
+      items = currentUser?.receivedRequests;
       break;
   }
 
@@ -83,19 +85,24 @@ function UserProfilePage() {
         <div>
           <div>
             <div>
-              <Avatar user={user} showStatus={!isMyProfile} />
+              <div>
+                <Avatar user={user} showStatus={!isMyProfile} />
+                <span>
+                  {isMyProfile ? "Online" : makeStatus(user, settings.is24h)}
+                </span>
+              </div>
+              {isMyProfile && (
+                <div>
+                  <Link to="/me/edit" replace={true}>
+                    Edit profile <i className="bi bi-pencil-fill" />
+                  </Link>
+                </div>
+              )}
               <div>
                 <h2>{fullName}</h2>
                 <span>@{user?.username}</span>
               </div>
             </div>
-            {isMyProfile && (
-              <div>
-                <Link to="/me/edit" replace={true}>
-                  Edit profile <i className="bi bi-pencil-fill" />
-                </Link>
-              </div>
-            )}
           </div>
           <div>
             <div>

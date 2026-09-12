@@ -123,6 +123,7 @@ async function $getMyChats(req, res, next) {
                 firstName: true,
                 lastName: true,
                 username: true,
+                isOnline: true,
               },
             },
             messages: {
@@ -428,9 +429,18 @@ async function getUserPreview(req, res, next) {
         lastName: true,
         username: true,
         lastSeen: true,
+        isOnline: true,
         receivedRequests: {
           where: {
             senderId: requestAuthorId,
+          },
+          select: {
+            id: true,
+          },
+        },
+        sentRequests: {
+          where: {
+            receiverId: requestAuthorId,
           },
           select: {
             id: true,
@@ -485,7 +495,9 @@ async function getUserProfile(req, res, next) {
         firstName: true,
         lastName: true,
         username: true,
+        createdAt: isMyProfile,
         lastSeen: true,
+        isOnline: true,
         receivedRequests: isMyProfile
           ? {
               where: {
@@ -516,6 +528,14 @@ async function getUserProfile(req, res, next) {
                 id: true,
               },
             },
+        sentRequests: {
+          where: {
+            receiverId: requestAuthorId,
+          },
+          select: {
+            id: true,
+          },
+        },
         friends: {
           where: {
             id: requestAuthorId,
@@ -634,6 +654,27 @@ async function $friendRequestPost(req, res, next) {
     });
 
     res.json({ message: "Succeed" });
+
+    const { io } = req;
+    const friendReqest = await prisma_client.friendRequest.findFirst({
+      where: {
+        receiverId: receiverId,
+        senderId: senderId,
+      },
+      select: {
+        id: true,
+        sender: {
+          select: {
+            id: true,
+            avatarUrl: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+          },
+        },
+      },
+    });
+    io.to(`user_${receiverId}`).emit("friend_request", friendReqest);
   } catch (err) {
     next(err);
   }

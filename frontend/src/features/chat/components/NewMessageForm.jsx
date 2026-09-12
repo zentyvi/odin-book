@@ -3,11 +3,13 @@ import { sendMessage } from "../../../api/functions/chats.js";
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
 const styles = {};
 
-function NewMessageForm({ companion, canTextThem, onMessageSend }) {
+function NewMessageForm({ chat, onMessageSend }) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const formattedMessage = message.trim();
   const textareaRef = useRef(null);
+  const companion = chat?.companion;
+  const canTextThem = chat?.whoCanText === "EVERYONE" || chat?.areFriends;
 
   const username = companion?.username || "user";
 
@@ -61,7 +63,7 @@ function NewMessageForm({ companion, canTextThem, onMessageSend }) {
     <form className={styles["message-form"]} onSubmit={handleSubmit}>
       {!canTextThem && (
         <div>
-          <span>This user has restricted who can send them messages.</span>
+          <span>This user has restricted who can send messages to them.</span>
         </div>
       )}
       <div className={styles["message-form__field-wrapper"]}>

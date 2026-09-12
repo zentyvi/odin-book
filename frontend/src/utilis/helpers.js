@@ -1,6 +1,7 @@
 import moment from "moment";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthProvider.jsx";
+import { useData } from "../contexts/DataProvider.jsx";
 
 export function getFullName(user) {
   return user ? `${user.firstName} ${user.lastName || ""}`.trim() : "User";
@@ -56,6 +57,13 @@ export function createDateMessage(date) {
   const format = isSameYear ? "MMMM D" : "YYYY, MMMM D";
 
   return moment(date).format(format);
+}
+
+export function makeStatus(user, is24h) {
+  const { lastSeen, isOnline } = user;
+  return isOnline
+    ? "Online"
+    : `Last seen: ${getCalendarTime(lastSeen, is24h).toLowerCase()}`;
 }
 
 export function formatNumber(number) {
@@ -149,9 +157,17 @@ export const filterData = (array, id) => {
 
 export const useTitle = (title) => {
   const { user } = useAuth();
+  const { chats } = useData();
   const receivedRequestsNumber = user?.receivedRequests?.length;
+  const unreadMessages = chats.reduce(
+    (accumulator, chat) => accumulator + chat?.unreadMessages,
+    0,
+  );
+
+  const notificationsNumber = receivedRequestsNumber + unreadMessages;
   const notifications =
-    receivedRequestsNumber > 0 ? `(${receivedRequestsNumber}) ` : "";
+    notificationsNumber > 0 ? `(${notificationsNumber}) ` : "";
+
   useEffect(() => {
     document.title = `${notifications}${title} · Odin Book`;
   }, [title, notifications]);

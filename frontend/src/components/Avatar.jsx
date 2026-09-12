@@ -17,8 +17,7 @@ function Avatar({ user, alt, showStatus = false, className = "" }) {
   }
 
   // Check if user was active within the last 3.5 minutes (210,000 ms)
-  const isOnline =
-    user.lastSeen && new Date() - new Date(user.lastSeen) < 3.5 * 60 * 1000;
+  const { isOnline } = user;
 
   const displayName = user.firstName || "User";
   const gradientId = user.firstName
