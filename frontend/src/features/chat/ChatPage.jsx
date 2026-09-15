@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getChat, markChatAsRead } from "../../api/functions/chats.js";
 import { deleteMessage } from "../../api/functions/messages.js";
@@ -6,11 +6,12 @@ import { useTitle } from "../../utilis/helpers.js";
 import { useData } from "../../contexts/DataProvider.jsx";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { socket } from "../../api/connection.js";
+import { useModal } from "../../contexts/ModalProvider.jsx";
 import ChatHeader from "./components/ChatHeader.jsx";
 import MessagesFeed from "./components/messages/MessagesFeed.jsx";
 import NewMessageForm from "./components/NewMessageForm.jsx";
 import Loader from "../../components/Loader.jsx";
-import { useModal } from "../../contexts/ModalProvider.jsx";
+import "../../styles/features/chat/ChatPage.css";
 
 function ChatPage() {
   const { username } = useParams();
@@ -24,11 +25,10 @@ function ChatPage() {
   } = useData();
   const { isAuthenticated, user } = useAuth();
   const { sendNotification } = useModal();
-  const chat = getChatFromCache(username);
   const [loading, setLoading] = useState(true);
+  const chat = getChatFromCache(username);
   const messages = chat?.messages || [];
   const companion = chat?.companion;
-  const messagesRef = useRef();
   const navigate = useNavigate();
   useTitle(companion?.username || "Chat");
 
@@ -85,11 +85,6 @@ function ChatPage() {
     // eslint-disable-next-line
   }, [username]);
 
-  /* Automatically scroll to the latest message when messages update */
-  useEffect(() => {
-    messagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages?.length]);
-
   const onMessageDelete = async (messageId) => {
     try {
       await deleteMessage(messageId);
@@ -113,7 +108,7 @@ function ChatPage() {
   };
 
   return (
-    <main>
+    <main id="app-content" className="chat-page">
       {companion && <ChatHeader chat={chat} />}
       {loading ? (
         <Loader />
@@ -127,8 +122,6 @@ function ChatPage() {
           <NewMessageForm chat={chat} onMessageSend={onMessageSend} />
         </>
       )}
-      {/* Invisible anchor element for auto-scrolling */}
-      <div ref={messagesRef} />{" "}
     </main>
   );
 }

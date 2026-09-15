@@ -1,0 +1,111 @@
+.account-settings {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+  width: 100%;
+}
+
+.account-settings__section {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.75rem;
+}
+
+.account-settings__section-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 0.25rem;
+}
+
+.acount-settings__subtitle {
+  font-weight: 500;
+  font-size: var(--font-size-base);
+}
+
+.account-settings__list {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-secondary);
+  box-shadow: var(--shadow-card);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* Row item layout with justify-content: space-between */
+.account-settings__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.account-settings__item:last-child {
+  border-bottom: none;
+}
+
+.account-settings__item:hover {
+  background-color: var(--background-tertiary);
+}
+
+.account-settings__label-box h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-heading);
+}
+
+/* Right container grouping value + edit button */
+.account-settings__value-box {
+  display: flex;
+  align-items: center;
+  column-gap: 1.25rem;
+  text-overflow: ellipsis;
+}
+
+.account-settings__value {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-settings__value--dimmed {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.account-settings__edit-btn {
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.account-settings__edit-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background-color: var(--background-main);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 769px) {
+  .account-settings__value-box {
+    column-gap: 0.8rem;
+  }
+
+  .account-settings__item {
+    padding: 0.8rem 1rem;
+  }
+}

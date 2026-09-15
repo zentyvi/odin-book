@@ -1,0 +1,4 @@
+#app-wrapper:has(.chat-page) aside {
+  position: static;
+  background-color: var(--background-secondary);
+}

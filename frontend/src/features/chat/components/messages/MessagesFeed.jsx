@@ -1,20 +1,20 @@
-import { useState } from "react";
-import Loader from "../../../../components/Loader.jsx";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../contexts/AuthProvider.jsx";
-import MessagesGroup from "./MessagesGroup.jsx";
 import {
   checkIfSameDay,
   createDateMessage,
   useEscape,
 } from "../../../../utilis/helpers.js";
+import MessagesGroup from "./MessagesGroup.jsx";
+import Loader from "../../../../components/Loader.jsx";
+import styles from "../../../../styles/features/chat/messages/MessagesFeed.module.css";
 
 function MessagesFeed({ messages, companion, onMessageDelete }) {
   const [activeContextMenu, setActiveContextMenu] = useState(null);
   const { user } = useAuth();
   const loading = typeof messages === "undefined";
-  const hasMessages = messages?.length > 0;
-  const messagesToParse = [...messages];
-  const parsedMessages = [];
+  const hasMessages = Array.isArray(messages) && messages.length > 0;
+  const messagesFeedRef = useRef(null);
 
   const openContextMenu = (messageId) => {
     setActiveContextMenu(messageId);
@@ -26,11 +26,12 @@ function MessagesFeed({ messages, companion, onMessageDelete }) {
 
   useEscape(closeContextMenu);
 
-  const makeGroup = (user, messages) => {
+  const makeGroup = (author, groupMessages) => {
+    const isOutgoing = user?.id === author?.id;
     return {
       id: crypto.randomUUID(),
       type: "GROUP",
-      group: { user, messages, id: crypto.randomUUID() },
+      group: { user: author, messages: groupMessages, isOutgoing },
     };
   };
 
@@ -42,11 +43,28 @@ function MessagesFeed({ messages, companion, onMessageDelete }) {
     };
   };
 
+  /* Automatically scroll to the latest message when messages update */
+  useEffect(() => {
+    if (messagesFeedRef.current) {
+      messagesFeedRef.current.scrollTo({
+        top: messagesFeedRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages?.length]);
+
   if (loading) {
-    return <Loader />;
+    return (
+      <div className={styles["messages-feed__loader"]}>
+        <Loader />
+      </div>
+    );
   }
 
+  const parsedMessages = [];
+
   if (hasMessages) {
+    const messagesToParse = [...messages];
     let currentGroup = [];
     let currentGroupAuthorId = null;
     let lastDate = null;
@@ -83,35 +101,47 @@ function MessagesFeed({ messages, companion, onMessageDelete }) {
       }
     });
   }
+
   return (
-    <div>
+    <div className={styles["messages-feed"]} ref={messagesFeedRef}>
       {hasMessages ? (
-        <ul>
-          {parsedMessages.map((message) => {
-            if (message?.type === "GROUP") {
-              const { group } = message;
+        <ul className={styles["messages-feed__list"]}>
+          {parsedMessages.map((part) => {
+            if (part?.type === "GROUP") {
+              const { group } = part;
               return (
                 <MessagesGroup
-                  key={message.id}
+                  key={part.id}
                   user={group.user}
                   messages={group.messages}
                   onMessageDelete={onMessageDelete}
                   openContextMenu={openContextMenu}
                   closeContextMenu={closeContextMenu}
                   activeContextMenu={activeContextMenu}
+                  isOutgoing={group?.isOutgoing}
+                  messagesFeedRef={messagesFeedRef}
                 />
               );
-            } else if (message?.type === "DATE") {
+            }
+
+            if (part?.type === "DATE") {
               return (
-                <li key={message?.id}>
-                  <span>{message?.content}</span>
+                <li
+                  key={part.id}
+                  className={styles["messages-feed__date-item"]}
+                >
+                  <span className={styles["messages-feed__date-badge"]}>
+                    {part.content}
+                  </span>
                 </li>
               );
             }
+
+            return null;
           })}
         </ul>
       ) : (
-        <div>
+        <div className={styles["messages-feed__empty"]}>
           <h3>You don't have any messages yet.</h3>
         </div>
       )}

@@ -84,6 +84,7 @@ async function $getMyFriends(req, res, next) {
             firstName: true,
             lastName: true,
             username: true,
+            isOnline: true,
           },
         },
       },
@@ -491,6 +492,7 @@ async function getUserProfile(req, res, next) {
       },
       select: {
         id: true,
+        type: isMyProfile,
         avatarUrl: true,
         firstName: true,
         lastName: true,

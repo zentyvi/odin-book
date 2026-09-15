@@ -9,10 +9,11 @@ import {
   updateLocalSettings,
   mergeData,
 } from "../utilis/helpers.js";
+import { register_user } from "../api/connection.js";
+import { SidebarProvider } from "../contexts/SidebarProvider.jsx";
 import Header from "../features/header/Header.jsx";
 import Loader from "../components/Loader";
-import Sidebar from "../features/sidebar/Sidebar.jsx";
-import { register_user } from "../api/connection.js";
+import SidebarWrapper from "../features/sidebar/SidebarWrapper.jsx";
 
 function HomePage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -81,11 +82,13 @@ function HomePage() {
   }
 
   return (
-    <div id="main-wrapper">
+    <SidebarProvider>
       <Header />
-      <Sidebar />
-      <Outlet />
-    </div>
+      <div id="app-wrapper">
+        <SidebarWrapper />
+        <Outlet />
+      </div>
+    </SidebarProvider>
   );
 }
 

@@ -1,0 +1,62 @@
+.messages-group {
+  display: grid;
+  gap: 0.3rem;
+  list-style: none;
+  margin-bottom: 0.75rem;
+  position: relative;
+  width: 100%;
+}
+
+.messages-group--incoming {
+  grid-template-columns: min-content auto;
+  grid-template-areas: "avatar messages";
+}
+
+.messages-group__avatar-wrapper {
+  grid-area: avatar;
+}
+
+.messages-group .messages-group__list {
+  grid-area: messages;
+}
+
+.messages-group--outgoing {
+  grid-template-columns: auto min-content;
+  grid-template-areas: "messages avatar";
+}
+
+.messages-group__avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.messages-group__avatar {
+  position: sticky;
+  bottom: 0.5rem;
+  top: 0.5rem;
+  margin-top: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.messages-group__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+@container messages-feed (width > 768px) {
+  .messages-group--outgoing {
+    grid-template-columns: min-content auto;
+    grid-template-areas: "avatar messages";
+  }
+}

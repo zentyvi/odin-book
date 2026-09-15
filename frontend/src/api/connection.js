@@ -11,4 +11,9 @@ const register_user = (userId) => {
   socket.emit("register_user", userId);
 };
 
-export { register_user, socket };
+const unserialize_user = (userId) => {
+  socket.emit("unserialize_user", userId);
+  socket.disconnect();
+};
+
+export { register_user, unserialize_user, socket };

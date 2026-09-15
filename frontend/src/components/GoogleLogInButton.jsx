@@ -1,6 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { googleLogIn } from "../api/functions/auth";
 import { useAuth } from "../contexts/AuthProvider.jsx";
+import styles from "../styles/components/GoogleLogInButton.module.css";
 
 function GoogleLogInButton() {
   const { login } = useAuth();
@@ -12,11 +13,28 @@ function GoogleLogInButton() {
         login(result.token);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Google LogIn Error:", err);
     }
   };
 
-  return <GoogleLogin type="icon" onSuccess={handleSuccess} />;
+  const handleError = () => {
+    console.error("Google LogIn failed");
+  };
+
+  return (
+    <div className={styles["google-btn-wrapper"]}>
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={handleError}
+        text="continue_with"
+        shape="rectangular"
+        theme="outline"
+        size="large"
+        width="100%"
+        height="100%"
+      />
+    </div>
+  );
 }
 
 export default GoogleLogInButton;

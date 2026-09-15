@@ -1,0 +1,49 @@
+.sidebar-section {
+  width: 100%;
+}
+
+.sidebar-section__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: color 0.2s ease;
+}
+
+.sidebar-section__summary::-webkit-details-marker {
+  display: none;
+}
+
+.sidebar-section__summary:hover {
+  color: var(--text-heading);
+}
+
+.sidebar-section__title {
+  margin: 0;
+}
+
+.sidebar-section__icon {
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-section[open] .sidebar-section__icon {
+  transform: rotate(180deg);
+}
+
+.sidebar-section__list {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

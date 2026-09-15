@@ -208,3 +208,17 @@ export const useEscape = (callback) => {
     };
   });
 };
+
+export const useUnreadMessages = () => {
+  const { user } = useAuth();
+  const { chats } = useData();
+
+  const unreadMessages = chats.reduce(
+    (accumulator, chat) => accumulator + chat?.unreadMessages,
+    0,
+  );
+
+  if (!user) return 0;
+
+  return unreadMessages;
+};

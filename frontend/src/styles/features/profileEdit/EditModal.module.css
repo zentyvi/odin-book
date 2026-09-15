@@ -1,0 +1,175 @@
+/* Fixed Fullscreen Dimming Overlay */
+.edit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  animation: backdropFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modal Popup Card */
+.edit-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--background-floating);
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.edit-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.edit-modal__title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.edit-modal__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--background-tertiary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-modal__close-btn:hover {
+  background-color: var(--border-color);
+  color: var(--text-heading);
+}
+
+.edit-modal__form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.25rem;
+}
+
+.edit-modal__field {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.375rem;
+}
+
+.edit-modal__label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.edit-modal__input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background-color: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.625rem;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.edit-modal__input:focus {
+  border-color: var(--accent-color);
+  background-color: var(--background-secondary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.edit-modal__error {
+  font-size: var(--font-size-xs);
+  color: var(--danger-color);
+  margin-top: 0.125rem;
+}
+
+.edit-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.edit-modal__btn--cancel {
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.edit-modal__btn--cancel:hover {
+  background-color: var(--background-tertiary);
+}
+
+.edit-modal__btn--save {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.625rem;
+  border: none;
+  background: linear-gradient(
+    45deg,
+    var(--accent-gradient-start),
+    var(--accent-gradient-end)
+  );
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+.edit-modal__btn--save:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.edit-modal__btn--save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Appearance Animations */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

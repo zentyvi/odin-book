@@ -4,7 +4,7 @@ import { getFullName } from "../../../utilis/helpers.js";
 import { useModal } from "../../../contexts/ModalProvider.jsx";
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
 
-function ChatButton({ companion }) {
+function ChatButton({ companion, className = "" }) {
   const { isAuthenticated } = useAuth();
   const { closeModal, sendNotification } = useModal();
   const buttonRef = useRef();
@@ -32,17 +32,15 @@ function ChatButton({ companion }) {
   };
 
   return (
-    <li>
-      <Link
-        to={`/chats/${companion?.username || companion?.id}`}
-        replace={true}
-        aria-label={`To chat with ${getFullName(companion)}`}
-        onClick={handleChat}
-        ref={buttonRef}
-      >
-        Chat
-      </Link>
-    </li>
+    <Link
+      to={`/chats/${companion?.username || companion?.id}`}
+      aria-label={`To chat with ${getFullName(companion)}`}
+      onClick={handleChat}
+      ref={buttonRef}
+      className={`btn btn--secondary ${className}`}
+    >
+      Chat
+    </Link>
   );
 }
 export default ChatButton;

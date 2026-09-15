@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import FocusLock from "react-focus-lock";
 import { useEscape } from "../../utilis/helpers.js";
-const styles = {};
+import styles from "../../styles/features/profileEdit/EditModal.module.css";
 
 function EditModal({ field, onClose, onSave, errors, setErrors }) {
   const [value, setValue] = useState(field?.value || "");
@@ -131,22 +131,9 @@ function EditModal({ field, onClose, onSave, errors, setErrors }) {
             )}
 
             <div className={styles["edit-modal__actions"]}>
-              <button
-                type="button"
-                className={styles["edit-modal__btn--cancel"]}
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className={styles["edit-modal__btn--save"]}
-                disabled={isDisabled}
-              >
-                Save
-              </button>
               {field.type === "password" && (
                 <button
+                  className="btn btn--secondary"
                   type="button"
                   aria-label="Show passwords"
                   aria-pressed={showPasswords}
@@ -161,6 +148,20 @@ function EditModal({ field, onClose, onSave, errors, setErrors }) {
                   )}
                 </button>
               )}
+              <button
+                type="button"
+                className={styles["edit-modal__btn--cancel"]}
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={styles["edit-modal__btn--save"]}
+                disabled={isDisabled}
+              >
+                Save
+              </button>
             </div>
           </form>
         </div>

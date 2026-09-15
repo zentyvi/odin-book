@@ -255,11 +255,14 @@ export function DataProvider({ children }) {
     });
 
     socket.on("update_status", (data) => {
-      const { userId, isOnline } = data;
+      const { userId, isOnline, lastSeen } = data;
       setChats((prev) =>
         prev.map((chat) => {
           if (chat.companion?.id === userId) {
-            return { ...chat, companion: { ...chat.companion, isOnline } };
+            return {
+              ...chat,
+              companion: { ...chat.companion, isOnline, lastSeen },
+            };
           }
           return chat;
         }),

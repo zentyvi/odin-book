@@ -7,9 +7,9 @@ import {
   validatePassword,
 } from "../../utilis/validators.js";
 import { updateMyProfile } from "../../api/functions/users.js";
-import EditModal from "./EditModal.jsx";
 import { capitalizeFirstLetter } from "../../utilis/helpers.js";
-const styles = {};
+import EditModal from "./EditModal.jsx";
+import styles from "../../styles/features/profileEdit/EditFields.module.css";
 
 function EditFields() {
   const { user, setUser } = useAuth();
@@ -37,15 +37,17 @@ function EditFields() {
     <div className={styles["account-settings"]}>
       {/* Account Personal Info Section */}
       <section className={styles["account-settings__section"]}>
-        <h3 className={styles["account-settings__section-title"]}>
+        <h2 className={styles["account-settings__section-title"]}>
           Account Info
-        </h3>
+        </h2>
 
         <div className={styles["account-settings__list"]}>
           {/* First Name */}
           <div className={styles["account-settings__item"]}>
             <div className={styles["account-settings__label-box"]}>
-              <h4>First name</h4>
+              <h3 className={styles["acount-settings__subtitle"]}>
+                First name
+              </h3>
             </div>
             <div className={styles["account-settings__value-box"]}>
               <span className={styles["account-settings__value"]}>
@@ -72,12 +74,14 @@ function EditFields() {
           {/* Last Name */}
           <div className={styles["account-settings__item"]}>
             <div className={styles["account-settings__label-box"]}>
-              <h4>Last name</h4>
+              <h3 className={styles["acount-settings__subtitle"]}>Last name</h3>
             </div>
             <div className={styles["account-settings__value-box"]}>
               <span
                 className={`${styles["account-settings__value"]} ${
-                  !user.lastName ? styles["account-settings__value--empty"] : ""
+                  !user.lastName
+                    ? styles["account-settings__value--dimmed"]
+                    : ""
                 }`}
               >
                 {user.lastName || "Not set"}
@@ -103,11 +107,17 @@ function EditFields() {
           {/* Username */}
           <div className={styles["account-settings__item"]}>
             <div className={styles["account-settings__label-box"]}>
-              <h4>Username</h4>
+              <h3 className={styles["acount-settings__subtitle"]}>Username</h3>
             </div>
             <div className={styles["account-settings__value-box"]}>
               <span className={styles["account-settings__value"]}>
-                @{user.username}
+                <span
+                  aria-hidden={true}
+                  className={styles["account-settings__value--dimmed"]}
+                >
+                  @
+                </span>
+                {user.username}
               </span>
               <button
                 type="button"
@@ -131,13 +141,13 @@ function EditFields() {
 
       {/* Security Section */}
       <section className={styles["account-settings__section"]}>
-        <h3 className={styles["account-settings__section-title"]}>Security</h3>
+        <h2 className={styles["account-settings__section-title"]}>Security</h2>
 
         <div className={styles["account-settings__list"]}>
           {/* Password */}
           <div className={styles["account-settings__item"]}>
             <div className={styles["account-settings__label-box"]}>
-              <h4>Password</h4>
+              <h3 className={styles["acount-settings__subtitle"]}>Password</h3>
             </div>
             {userType === "USERNAME" ? (
               <div className={styles["account-settings__value-box"]}>
@@ -162,7 +172,7 @@ function EditFields() {
               </div>
             ) : (
               <div>
-                <span>
+                <span className={styles["account-settings__value--dimmed"]}>
                   You are signed in via {capitalizeFirstLetter(userType)}{" "}
                 </span>
               </div>

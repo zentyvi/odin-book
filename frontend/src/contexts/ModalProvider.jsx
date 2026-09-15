@@ -37,6 +37,7 @@ export function ModalProvider({ children }) {
     <ModalContext.Provider
       value={{
         notifications,
+        setNotifications,
         sendNotification,
         removeNotification,
         activeModal,

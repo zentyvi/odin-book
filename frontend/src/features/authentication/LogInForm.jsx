@@ -6,7 +6,7 @@ import GoogleLogInButton from "../../components/GoogleLogInButton";
 import GitHubLogInButton from "../../components/GithubLogInButton";
 import { useAuth } from "../../contexts/AuthProvider";
 import { useTitle } from "../../utilis/helpers.js";
-const styles = {};
+import styles from "../../styles/features/authentication/LogInForm.module.css";
 
 function LogInForm() {
   const [errors, setErrors] = useState({});
@@ -14,6 +14,7 @@ function LogInForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login, continueAsGuest } = useAuth();
+
   useTitle("Log in");
 
   const handleSubmit = async (e) => {
@@ -25,13 +26,14 @@ function LogInForm() {
       const data = { username, password };
       const result = await logIn(data);
 
-      if (result.errors) {
+      if (result?.errors) {
         setErrors(result.errors);
-      } else {
+      } else if (result?.token) {
         login(result.token, null);
       }
     } catch (err) {
       console.error(err);
+      setErrors({ general: "An unexpected error occurred. Please try again." });
     } finally {
       setIsLoading(false);
     }
@@ -39,26 +41,31 @@ function LogInForm() {
 
   return (
     <main className={styles["auth-container"]}>
-      <title>Log in | Odin Book</title>
       <div className={styles["auth-card"]}>
         <header className={styles["auth-card__header"]}>
-          <h2 className={styles["auth-card__title"]}>Log in</h2>
+          <h1 className={styles["auth-card__title"]}>Log in</h1>
           <p className={styles["auth-card__subtitle"]}>
             Don't have an account yet?{" "}
-            <Link
-              to="/auth/sign-up"
-              replace={true}
-              className={styles["auth-card__link"]}
-            >
+            <Link to="/auth/sign-up" className={styles["auth-card__link"]}>
               Sign up
             </Link>
-            . Or continue as a{" "}
-            <Link to="/" replace={true} onClick={continueAsGuest}>
+            <br />. Or continue as a{" "}
+            <Link
+              to="/"
+              onClick={continueAsGuest}
+              className={styles["auth-card__link"]}
+            >
               guest
             </Link>
             .
           </p>
         </header>
+
+        {errors.general && (
+          <div className={styles["auth-card__error-banner"]}>
+            {errors.general}
+          </div>
+        )}
 
         <form className={styles["auth-form"]} onSubmit={handleSubmit}>
           <div className={styles["auth-form__fields"]}>
@@ -104,7 +111,12 @@ function LogInForm() {
             </button>
           </div>
         </form>
-        <div>
+
+        <div className={styles["auth-card__divider"]}>
+          <span>OR</span>
+        </div>
+
+        <div className={styles["auth-card__oauth-group"]}>
           <GoogleLogInButton />
           <GitHubLogInButton />
         </div>

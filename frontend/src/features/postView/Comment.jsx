@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link } from "react-router";
+import FocusLock from "react-focus-lock";
 import { useData } from "../../contexts/DataProvider.jsx";
 import { useModal } from "../../contexts/ModalProvider.jsx";
 import {
@@ -6,11 +9,10 @@ import {
   useEscape,
 } from "../../utilis/helpers.js";
 import { deleteComment, likeComment } from "../../api/functions/comments.js";
-import Avatar from "../../components/Avatar.jsx";
-import LikeButton from "../../components/LikeButton.jsx";
-import { useState } from "react";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
-import { Link } from "react-router";
+import LikeButton from "../../components/LikeButton.jsx";
+import Avatar from "../../components/Avatar.jsx";
+import styles from "../../styles/features/postView/Comment.module.css";
 
 function Comment({ comment, postId, includeNavigation = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +23,7 @@ function Comment({ comment, postId, includeNavigation = false }) {
 
   const author = comment?.author;
   const isLiked = comment?.likedBy?.length > 0;
-  const likesNumber = comment?._count?.likedBy;
+  const likesNumber = comment?._count?.likedBy || 0;
   const isMyComment = author?.id === user?.id;
 
   const handleLike = async () => {
@@ -30,8 +32,11 @@ function Comment({ comment, postId, includeNavigation = false }) {
     return result;
   };
 
+  /* Copy comment text to clipboard */
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(comment.content);
+    if (comment?.content) {
+      await navigator.clipboard.writeText(comment.content);
+    }
     setIsMenuOpen(false);
   };
 
@@ -48,74 +53,125 @@ function Comment({ comment, postId, includeNavigation = false }) {
     }
   };
 
+  const handleOpenProfile = () => {
+    if (author) {
+      openModal("USER_PREVIEW", author);
+    }
+  };
+
+  /* Actions popup menu wrapped with FocusLock for keyboard accessibility */
   const actionsMenu = (
-    <div id={`actions-menu-${comment?.id}`}>
-      <div>
-        <ul>
-          <li>
-            <button aria-label="Copy comment" onClick={handleCopy}>
+    <FocusLock returnFocus={true}>
+      <div
+        className={styles["comment__backdrop"]}
+        onClick={() => setIsMenuOpen(false)}
+      />
+      <div
+        id={`actions-menu-${comment?.id}`}
+        className={styles["comment__dropdown"]}
+      >
+        <ul className={styles["comment__dropdown-list"]}>
+          <li className={styles["comment__dropdown-item"]}>
+            <button
+              type="button"
+              className={styles["comment__dropdown-btn"]}
+              aria-label="Copy comment text"
+              onClick={handleCopy}
+            >
+              <i className="bi bi-clipboard" aria-hidden="true" />
               Copy
             </button>
           </li>
-          {isMyComment && (
-            <li>
-              <button aria-label="Delete comment" onClick={handleDelete}>
-                Delete
-              </button>
-            </li>
-          )}
           {includeNavigation && (
-            <li>
-              <Link to={`/posts/${postId}`} replace={true}>
+            <li className={styles["comment__dropdown-item"]}>
+              <Link
+                to={`/posts/${postId}`}
+                className={styles["comment__dropdown-link"]}
+              >
+                <i className="bi bi-arrow-right" aria-hidden="true" />
                 To post
               </Link>
             </li>
           )}
+          {isMyComment && (
+            <li className={styles["comment__dropdown-item"]}>
+              <button
+                type="button"
+                className={`${styles["comment__dropdown-btn"]} ${styles["comment__dropdown-btn--danger"]}`}
+                aria-label="Delete comment"
+                onClick={handleDelete}
+              >
+                <i className="bi bi-trash" aria-hidden="true" />
+                Delete
+              </button>
+            </li>
+          )}
         </ul>
       </div>
-    </div>
+    </FocusLock>
   );
 
   return (
-    <li>
-      <header>
-        <button
-          aria-label="open author's profile"
-          onClick={() => openModal("USER_PREVIEW", author)}
-        >
-          <Avatar user={author} showStatus={false} />
-        </button>
-        <div>
-          <div>
-            <button
-              aria-label="open author's profile"
-              onClick={() => openModal("USER_PREVIEW", author)}
-            >
-              <span>{getFullName(author)}</span>
-            </button>
-            <span>{getCalendarTime(comment?.createdAt, settings?.is24h)}</span>
+    <li className={styles["comment"]}>
+      <article className={styles["comment__article"]}>
+        <div className={styles["comment__avatar"]}>
+          <button
+            type="button"
+            className={styles["comment__author-btn"]}
+            aria-label="Open author's profile"
+            onClick={handleOpenProfile}
+          >
+            <Avatar user={author} showStatus={false} />
+          </button>
+        </div>
+
+        <div className={styles["comment__content"]}>
+          <header className={styles["comment__header"]}>
+            <div className={styles["comment__author-info"]}>
+              <button
+                type="button"
+                className={styles["comment__author-name-btn"]}
+                aria-label="Open author's profile"
+                onClick={handleOpenProfile}
+              >
+                <span className={styles["comment__author-name"]}>
+                  {getFullName(author)}
+                </span>
+              </button>
+              <span className={styles["comment__time"]}>
+                {getCalendarTime(comment?.createdAt, settings?.is24h)}
+              </span>
+            </div>
+
+            <div className={styles["comment__actions"]}>
+              <LikeButton
+                initialState={isLiked}
+                likesNumber={likesNumber}
+                onLike={handleLike}
+              />
+
+              <div className={styles["comment__menu-wrapper"]}>
+                <button
+                  type="button"
+                  className={styles["comment__menu-btn"]}
+                  aria-controls={`actions-menu-${comment?.id}`}
+                  aria-expanded={isMenuOpen}
+                  aria-haspopup="true"
+                  aria-label="Actions menu button"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  <i className="bi bi-three-dots" aria-hidden="true" />
+                </button>
+                {isMenuOpen && actionsMenu}
+              </div>
+            </div>
+          </header>
+
+          <div className={styles["comment__body"]}>
+            <p className={styles["comment__text"]}>{comment?.content}</p>
           </div>
         </div>
-        <LikeButton
-          initialState={isLiked}
-          likesNumber={likesNumber}
-          onLike={handleLike}
-        />
-        <div>
-          <button
-            aria-controls={`actions-menu-${comment?.id}`}
-            aria-expanded={isMenuOpen}
-            aria-label="Actions menu buttin"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <i className="bi bi-list" />
-          </button>
-          {isMenuOpen && actionsMenu}
-        </div>
-      </header>
-      <main>
-        <p>{comment?.content}</p>
-      </main>
+      </article>
     </li>
   );
 }

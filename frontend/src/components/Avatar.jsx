@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getRandomNumberFromString } from "../utilis/helpers.js";
-const styles = {};
+import styles from "../styles/components/Avatar.module.css";
 
 function Avatar({ user, alt, showStatus = false, className = "" }) {
   const [errors, setErrors] = useState(null);

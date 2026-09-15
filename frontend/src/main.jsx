@@ -8,7 +8,7 @@ import { ModalProvider } from "./contexts/ModalProvider.jsx";
 
 import router from "./routes.jsx";
 
-const root = createRoot(document.getElementById("root"));
+const root = createRoot(document.getElementById("main-wrapper"));
 
 root.render(
   <AuthProvider>

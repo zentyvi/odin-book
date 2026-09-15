@@ -1,9 +1,10 @@
 import { useData } from "../../../contexts/DataProvider.jsx";
 import SettingsSection from "../SettingsSection.jsx";
+import styles from "../../../styles/features/settings/SettingsRow.module.css";
 
 function PrivacyAndSecurity({ updateField }) {
   const { settings } = useData();
-  const defaultValue = settings?.whoCanTextMe;
+  const whoCanTextMe = settings?.whoCanTextMe || "EVERYONE";
 
   const handleWhoCanText = (e) => {
     const { value } = e.target;
@@ -12,16 +13,19 @@ function PrivacyAndSecurity({ updateField }) {
 
   return (
     <SettingsSection title="Privacy and Security">
-      <div>
-        <div>
-          <label htmlFor="who-can-text-me">Who can text me</label>
+      <div className={styles["row"]}>
+        <div className={styles["label-container"]}>
+          <label htmlFor="who-can-text-me" className={styles["label"]}>
+            Who can text me
+          </label>
         </div>
-        <div>
+        <div className={styles["select-container"]}>
           <select
             name="whoCanTextMe"
             id="who-can-text-me"
-            defaultValue={defaultValue}
+            defaultValue={whoCanTextMe}
             onChange={handleWhoCanText}
+            className={styles["select"]}
           >
             <option value="EVERYONE">Everyone</option>
             <option value="FRIENDS">Friends</option>

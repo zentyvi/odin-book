@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { searchUsers } from "../../api/functions/search.js";
-import UserCard from "../../components/UserCard.jsx";
-
-import Loader from "../../components/Loader";
 import { useTitle } from "../../utilis/helpers.js";
-const styles = {};
+import UserCard from "../../components/UserCard.jsx";
+import Loader from "../../components/Loader.jsx";
+import styles from "../../styles/features/search/SearchPage.module.css";
 
 function SearchPage() {
   const [query, setQuery] = useState("");
@@ -46,13 +45,13 @@ function SearchPage() {
   }, [query]);
 
   /* Empty and search helper states */
-  const message =
+  const emptyState =
     query.trim().length > 0 ? (
       <div className={styles["search-page__empty-state"]}>
         <i
-          className={`fa-solid fa-user-slash ${styles["search-page__empty-icon"]}`}
+          className={`bi bi-person-x ${styles["search-page__empty-icon"]}`}
           aria-hidden="true"
-        ></i>
+        />
         <h2 className={styles["search-page__empty-title"]}>No results</h2>
         <p className={styles["search-page__empty-desc"]}>
           There were no users found for "{query}".
@@ -61,18 +60,17 @@ function SearchPage() {
     ) : (
       <div className={styles["search-page__empty-state"]}>
         <i
-          className={`fa-solid fa-users ${styles["search-page__empty-icon"]}`}
+          className={`bi bi-people ${styles["search-page__empty-icon"]}`}
           aria-hidden="true"
-        ></i>
+        />
         <h2 className={styles["search-page__empty-title"]}>Search Users</h2>
         <p className={styles["search-page__empty-desc"]}>
-          Type a first name, id or username in the field above to start
-          searching.
+          Type a name, ID, or username in the field above to start searching.
         </p>
       </div>
     );
 
-  const result =
+  const searchResult =
     users.length > 0 ? (
       <div className={styles["search-page__results"]}>
         <header className={styles["search-page__results-header"]}>
@@ -81,58 +79,68 @@ function SearchPage() {
           </h2>
         </header>
 
-        <ul
-          className={styles["search-page__list"]}
-          role="list"
-          aria-orientation="vertical"
-        >
+        <ul className={styles["search-page__list"]}>
           {users.map((u) => (
-            <UserCard key={u.id} user={u} />
+            <li key={u.id} className={styles["search-page__item"]}>
+              <UserCard user={u} />
+            </li>
           ))}
         </ul>
       </div>
     ) : (
-      message
+      emptyState
     );
 
   return (
-    <main className={styles["search-page"]}>
-      <header className={styles["search-page__header"]}>
-        <form
-          className={styles["search-page__form"]}
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <div className={styles["search-page__input-wrapper"]}>
-            <i
-              className={`bi bi-search-heart ${styles["search-page__search-icon"]}`}
-              aria-hidden="true"
-            ></i>
+    <main id="app-content" aria-labelledby="search-page-heading">
+      <div className="content-wrapper">
+        <header className={styles["search-page__header"]}>
+          <h1 id="search-page-heading" className={styles["search-page__title"]}>
+            User Search
+          </h1>
+          <form
+            className={styles["search-page__form"]}
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className={styles["search-page__input-wrapper"]}>
+              <i
+                className={`bi bi-search ${styles["search-page__search-icon"]}`}
+                aria-hidden="true"
+              />
+              <label htmlFor="user-search-input" className="sr-only">
+                Search users
+              </label>
+              <input
+                id="user-search-input"
+                type="text"
+                name="search"
+                className={styles["search-page__input"]}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search users..."
+                autoFocus
+              />
+              {query && (
+                <button
+                  type="button"
+                  className={styles["search-page__clear-btn"]}
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search field"
+                >
+                  <i className="bi bi-x-lg" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </form>
+        </header>
 
-            <input
-              type="text"
-              name="search"
-              className={styles["search-page__input"]}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search users..."
-              autoFocus
-            />
-            {query && (
-              <button
-                type="button"
-                className={styles["search-page__clear-btn"]}
-                onClick={() => setQuery("")}
-                aria-label="Clear search field"
-              >
-                <i className="bi bi-x-lg" aria-hidden="true"></i>
-              </button>
-            )}
-          </div>
-        </form>
-      </header>
-
-      <div className={styles["search-page__content"]}>
-        {loading ? <Loader /> : result}
+        <div className={styles["search-page__content"]}>
+          {loading ? (
+            <Loader className={styles["search-page__loader"]} />
+          ) : (
+            searchResult
+          )}
+        </div>
       </div>
     </main>
   );

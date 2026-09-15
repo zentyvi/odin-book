@@ -42,6 +42,7 @@ async function searchUsers(req, res, next) {
         firstName: true,
         lastName: true,
         username: true,
+        isOnline: true,
       },
     });
     return res.status(200).json(results);

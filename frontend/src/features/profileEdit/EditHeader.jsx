@@ -7,8 +7,8 @@ import {
 import { uploadAvatar, deleteAvatar } from "../../api/functions/users.js";
 import { useAuth } from "../../contexts/AuthProvider.jsx";
 import { useData } from "../../contexts/DataProvider.jsx";
-const avatarStyles = {};
-const styles = {};
+import avatarStyles from "../../styles/components/Avatar.module.css";
+import styles from "../../styles/features/profileEdit/EditHeader.module.css";
 
 function EditHeader() {
   const { user, setUser } = useAuth();
@@ -138,7 +138,7 @@ function EditHeader() {
                 onClick={handleTriggerFileInput}
                 role="menuitem"
               >
-                <i className="fa-solid fa-upload" aria-hidden="true"></i>
+                <i className="bi bi-upload" aria-hidden={true} />
                 <span>Upload</span>
               </button>
               {previewUrl && (
@@ -148,7 +148,7 @@ function EditHeader() {
                   onClick={handleDeleteButton}
                   role="menuitem"
                 >
-                  <i className="fa-solid fa-trash" aria-hidden="true"></i>
+                  <i className="bi bi-trash" aria-hidden="true" />
                   <span>Delete</span>
                 </button>
               )}

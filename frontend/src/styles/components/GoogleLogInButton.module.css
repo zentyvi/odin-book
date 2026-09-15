@@ -1,0 +1,32 @@
+.google-btn-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
+.google-btn-wrapper span {
+  white-space: wrap;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.google-btn-wrapper > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.google-btn-wrapper > div > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.google-btn-wrapper > div > div > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.google-btn-wrapper > div > div > div > div {
+  width: 100% !important;
+  height: 100% !important;
+}

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { filterData, mergeData } from "../utilis/helpers.js";
-import { socket } from "../api/connection.js";
+import { socket, unserialize_user } from "../api/connection.js";
 
 const AuthContext = createContext(null);
 
@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("settings");
+    unserialize_user(user?.id);
     setToken(null);
     setUser(null);
   };
@@ -84,12 +85,12 @@ export function AuthProvider({ children }) {
     });
 
     socket.on("update_status", (data) => {
-      const { userId, isOnline } = data;
+      const { userId, isOnline, lastSeen } = data;
       setUser((prev) => {
         const prevFriends = prev.friends || [];
         const newFriends = prevFriends.map((f) => {
           if (f.id === userId) {
-            return { ...f, isOnline };
+            return { ...f, isOnline, lastSeen };
           }
           return f;
         });

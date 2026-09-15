@@ -2,8 +2,7 @@ import Loader from "../../components/Loader.jsx";
 import PostCard from "../postsFeed/PostCard.jsx";
 import Comment from "../postView/Comment.jsx";
 import FriendRequestItem from "./FriendRequestItem.jsx";
-
-const style = {};
+import styles from "../../styles/features/profileView/UserProfileItems.module.css";
 
 function UserProfileItems({ type, data, setUser, isMyProfile }) {
   const loading = typeof data === "undefined";
@@ -36,16 +35,16 @@ function UserProfileItems({ type, data, setUser, isMyProfile }) {
   }
 
   return (
-    <main className={style[`profile__${type.toLowerCase()}`]}>
+    <section className={styles["profile-items"]}>
       {items?.length > 0 ? (
-        <ul>{items}</ul>
+        <ul className={styles["profile-items__list"]}>{items}</ul>
       ) : (
-        <div className={style["profile__empty"]}>
+        <div className={styles["profile-items__empty"]}>
           <h2>There is nothing</h2>
           <p>{message}</p>
         </div>
       )}
-    </main>
+    </section>
   );
 }
 

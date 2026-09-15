@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { sendMessage } from "../../../api/functions/chats.js";
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
-const styles = {};
+import styles from "../../../styles/features/chat/NewMessageForm.module.css";
 
 function NewMessageForm({ chat, onMessageSend }) {
   const { user } = useAuth();
@@ -12,12 +12,11 @@ function NewMessageForm({ chat, onMessageSend }) {
   const canTextThem = chat?.whoCanText === "EVERYONE" || chat?.areFriends;
 
   const username = companion?.username || "user";
-
   const hasMessage = formattedMessage.length > 0;
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    if (formattedMessage.length === 0) return;
+    if (formattedMessage.length === 0 || !canTextThem) return;
 
     try {
       const result = await sendMessage(
@@ -62,21 +61,23 @@ function NewMessageForm({ chat, onMessageSend }) {
   return (
     <form className={styles["message-form"]} onSubmit={handleSubmit}>
       {!canTextThem && (
-        <div>
+        <div className={styles["message-form__restriction"]}>
           <span>This user has restricted who can send messages to them.</span>
         </div>
       )}
+
       <div className={styles["message-form__field-wrapper"]}>
         <textarea
           id="message"
           ref={textareaRef}
           className={styles["message-form__textarea"]}
-          placeholder={`Message @${username}...`}
+          placeholder={
+            canTextThem ? `Message @${username}...` : "Messaging unavailable"
+          }
           value={message}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           rows={1}
-          required
           disabled={!canTextThem}
           autoComplete="off"
         />
@@ -90,7 +91,7 @@ function NewMessageForm({ chat, onMessageSend }) {
           <i
             className={`bi bi-send-fill ${styles["message-form__icon"]}`}
             aria-hidden="true"
-          ></i>
+          />
         </button>
       </div>
     </form>

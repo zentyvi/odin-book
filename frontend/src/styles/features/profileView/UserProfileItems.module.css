@@ -1,0 +1,19 @@
+.profile-items {
+  padding-bottom: 2rem;
+}
+
+.profile-items__list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1rem;
+}
+
+.profile-items__empty {
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

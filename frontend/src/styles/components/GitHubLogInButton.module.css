@@ -1,0 +1,42 @@
+.github-btn-wrapper {
+  width: 100%;
+}
+
+.github-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background-color: #24292e;
+  color: #ffffff;
+  border: 1px solid #24292e;
+  border-radius: 0.5rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.github-btn:hover {
+  background-color: #1b1f23;
+  border-color: #1b1f23;
+}
+
+.github-btn:active {
+  transform: scale(0.99);
+}
+
+.github-btn__icon {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+}
+
+.github-btn__text {
+  line-height: 1;
+}

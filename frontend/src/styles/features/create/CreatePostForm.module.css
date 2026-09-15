@@ -1,0 +1,118 @@
+.create-post-form-wrapper {
+  width: 100%;
+  background-color: var(--background-secondary);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.create-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.create-post-form__preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.create-post-form__preview-container {
+  position: relative;
+  width: 100%;
+  max-height: 320px;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  background-color: #9d9d9d;
+}
+
+.create-post-form__preview-img {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  display: block;
+}
+
+.create-post-form__remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.create-post-form__remove-btn:hover {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.create-post-form__file-input {
+  display: none;
+}
+
+.create-post-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.create-post-form__attach-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  cursor: pointer;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.create-post-form__attach-btn:hover {
+  color: var(--accent-color);
+  background-color: var(--background-tertiary);
+}
+
+.create-post-form__attach-text {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.create-post-form__submit-btn {
+  padding: 0.5rem 1.25rem;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border-radius: 0.375rem;
+}
+
+.create-post-form__error-msg {
+  font-size: var(--font-size-xs);
+  color: var(--danger-color);
+}
+
+@media (max-width: 420px) {
+  .create-post-form-wrapper {
+    padding: 0.6rem;
+  }
+
+  .create-post-form {
+    gap: 0.8rem;
+  }
+}

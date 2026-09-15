@@ -12,10 +12,14 @@ async function updateStatus(userId, isOnline) {
       isOnline: isOnline,
       lastSeen: new Date(),
     },
+    select: {
+      lastSeen: true,
+    },
   });
   if (!user) {
     throw new Error("User not found");
   }
+  return user;
 }
 
 async function _getContactsIds(userId) {
@@ -59,36 +63,41 @@ async function _getContactsIds(userId) {
   return [...idsSet];
 }
 
-async function alertContacts(io, userId, isOnline) {
+async function alertContacts(io, userId, data) {
   const contactIds = await _getContactsIds(userId);
 
   contactIds.forEach((id) => {
-    io.to(`user_${id}`).emit("update_status", { userId, isOnline });
+    io.to(`user_${id}`).emit("update_status", { userId, ...data });
   });
 }
 
 export const useSocket = (app) => {
+  const origin = process.env["ORIGIN"];
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: origin || "http://localhost:5173",
       methods: ["GET", "POST"],
     },
   });
 
   io.on("connection", (socket) => {
     let currentUserId;
-    socket.on("register_user", (userId) => {
+    socket.on("register_user", async (userId) => {
       currentUserId = userId;
       socket.join(`user_${userId}`);
-      updateStatus(userId, true);
-      alertContacts(io, userId, true);
+      const data = await updateStatus(userId, true);
+      alertContacts(io, userId, { ...data, isOnline: true });
     });
 
-    socket.on("disconnect", () => {
+    socket.on("unserialize_user", (userId) => {
+      socket.leave(`user_${userId}`);
+    });
+
+    socket.on("disconnect", async () => {
       if (currentUserId) {
-        updateStatus(currentUserId, false);
-        alertContacts(io, currentUserId, false);
+        const data = await updateStatus(currentUserId, false);
+        alertContacts(io, currentUserId, { ...data, isOnline: false });
       }
     });
   });

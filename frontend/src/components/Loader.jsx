@@ -1,10 +1,10 @@
-const styles = {};
+import styles from "../styles/components/Loader.module.css";
 
-function Loader({ label = "Loading..." }) {
+function Loader({ label = "Loading...", className = "" }) {
   return (
     <div
       data-testid="loader"
-      className={styles["loader-container"]}
+      className={`${styles["loader-container"]} ${className}`}
       role="status"
       aria-live="polite"
     >

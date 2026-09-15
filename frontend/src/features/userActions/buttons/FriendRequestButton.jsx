@@ -7,7 +7,7 @@ import {
 import { useAuth } from "../../../contexts/AuthProvider.jsx";
 import { useModal } from "../../../contexts/ModalProvider.jsx";
 
-function FreindRequestButton({ companion, setCompanion }) {
+function FreindRequestButton({ companion, setCompanion, className }) {
   const {
     user,
     isAuthenticated,
@@ -139,13 +139,18 @@ function FreindRequestButton({ companion, setCompanion }) {
   };
 
   return (
-    <li>
+    <>
       {areFriends ? (
-        <button ref={buttonRef} onClick={handleDeleteFriend}>
+        <button
+          ref={buttonRef}
+          onClick={handleDeleteFriend}
+          className={`btn btn--primary ${className}`}
+        >
           Delete friend
         </button>
       ) : (
         <button
+          className={`btn btn--primary ${className}`}
           disabled={isFriendRequestDisabled}
           ref={buttonRef}
           onClick={
@@ -155,7 +160,7 @@ function FreindRequestButton({ companion, setCompanion }) {
           {textContent}
         </button>
       )}
-    </li>
+    </>
   );
 }
 

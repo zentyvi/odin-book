@@ -7,56 +7,67 @@ import {
   getShortTime,
 } from "../../../../utilis/helpers.js";
 import { useData } from "../../../../contexts/DataProvider.jsx";
+import styles from "../../../../styles/features/sidebar/sections/chats/Chat.module.css";
 
-function Chat({ chat }) {
+function Chat({ chat, onItemClick }) {
   const { user } = useAuth();
   const { settings } = useData();
   const { companion, messages, unreadMessages } = chat;
+
   const lastMessage =
-    typeof messages !== "undefined" ? messages[messages.length - 1] : null;
-  const { isRead } = lastMessage;
+    Array.isArray(messages) && messages.length > 0
+      ? messages[messages.length - 1]
+      : null;
+
+  const isRead = lastMessage?.isRead;
   const isMyMessage = lastMessage?.authorId === user?.id;
   const hasImage = Boolean(lastMessage?.imageUrl);
   const hasContent = Boolean(lastMessage?.content);
 
   const previewMessage = (
-    <>
-      {hasImage ? (
-        <span aria-label="Attached image">
-          <i className="bi bi-image" aria-hidden={true} />
+    <span className={styles["chat__preview-text"]}>
+      {hasImage && (
+        <span
+          className={styles["chat__image-icon"]}
+          aria-label="Attached image"
+        >
+          <i className="bi bi-image" aria-hidden="true" /> Photo
         </span>
-      ) : (
-        ""
       )}
-      {hasContent ? (
+      {hasContent && (
         <span aria-label="Last message">{lastMessage?.content}</span>
-      ) : (
-        ""
       )}
-    </>
+    </span>
   );
 
   return (
-    <li>
-      <Link to={`/chats/${companion?.username || companion?.id}`}>
-        <Avatar user={companion} showStatus={true} />
-        <div>
-          <header>
-            <div>
-              <h3>{getFullName(companion)}</h3>
-            </div>
+    <li className={styles["chat-item"]}>
+      <Link
+        to={`/chats/${companion?.username || companion?.id}`}
+        className={styles["chat__link"]}
+        onClick={onItemClick}
+      >
+        <Avatar
+          user={companion}
+          showStatus={true}
+          className={styles["chat__avatar"]}
+        />
+        <div className={styles["chat__info"]}>
+          <div className={styles["chat__header"]}>
+            <h3 className={styles["chat__name"]}>{getFullName(companion)}</h3>
             {lastMessage && (
-              <div>
+              <div className={styles["chat__meta"]}>
                 {isMyMessage && (
-                  <div>
+                  <span className={styles["chat__status-icon"]}>
                     {isRead ? (
-                      <i className="bi bi-check-all" />
+                      <i className="bi bi-check-all" aria-label="Read" />
                     ) : (
-                      <i className="bi bi-check" />
+                      <i className="bi bi-check" aria-label="Sent" />
                     )}
-                  </div>
+                  </span>
                 )}
                 <span
+                  className={styles["chat__time"]}
                   title={getCalendarTime(
                     lastMessage?.createdAt,
                     settings?.is24h,
@@ -66,23 +77,24 @@ function Chat({ chat }) {
                 </span>
               </div>
             )}
-          </header>
-          <main>
+          </div>
+          <div className={styles["chat__body"]}>
             {hasContent || hasImage ? (
               <>
-                <div>{previewMessage}</div>
+                {previewMessage}
                 {unreadMessages > 0 && (
-                  <div>
-                    <span aria-label="Unread messages number">
-                      {unreadMessages}
-                    </span>
-                  </div>
+                  <span
+                    className={styles["chat__badge"]}
+                    aria-label="Unread messages number"
+                  >
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
+                  </span>
                 )}
               </>
             ) : (
-              <i>No messages yet</i>
+              <span className={styles["chat__empty"]}>No messages yet</span>
             )}
-          </main>
+          </div>
         </div>
       </Link>
     </li>

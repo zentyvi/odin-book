@@ -1,0 +1,28 @@
+.notifications {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+}
+
+@media (max-width: 568px) {
+  .notifications {
+    top: unset;
+    right: 0.6rem;
+    left: 0.6rem;
+    bottom: 0.6rem;
+  }
+
+  .notifications-list {
+    flex-direction: column-reverse;
+    gap: 0.4rem;
+  }
+}

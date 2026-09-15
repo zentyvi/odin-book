@@ -1,9 +1,10 @@
 import { useData } from "../../../contexts/DataProvider.jsx";
 import SettingsSection from "../SettingsSection.jsx";
+import styles from "../../../styles/features/settings/SettingsRow.module.css";
 
 function Appearance({ updateField }) {
   const { settings } = useData();
-  const defaultValue = settings?.theme;
+  const theme = settings?.theme || "DEFAULT";
 
   const handleTheme = (e) => {
     const { value } = e.target;
@@ -12,19 +13,21 @@ function Appearance({ updateField }) {
 
   return (
     <SettingsSection title="Appearance">
-      <div>
-        <div>
-          <label htmlFor="theme">Theme</label>
+      <div className={styles["row"]}>
+        <div className={styles["label-container"]}>
+          <label htmlFor="theme" className={styles["label"]}>
+            Theme
+          </label>
         </div>
-        <div>
+        <div className={styles["select-container"]}>
           <select
             name="theme"
             id="theme"
-            defaultValue={defaultValue}
+            defaultValue={theme}
             onChange={handleTheme}
+            className={styles["select"]}
           >
             <option value="DEFAULT">Default</option>
-            <option value="FRIENDS">Friends</option>
           </select>
         </div>
       </div>
