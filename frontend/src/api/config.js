@@ -1,4 +1,4 @@
-const api_version = import.meta.env.API_VERSION || "v1";
+const api_version = import.meta?.env?.VITE_API_VERSION || "v1";
 const port = import.meta.env.PORT || 3000;
 
 const dev_server = `http://localhost:${port}`;
