@@ -56,7 +56,7 @@ function UserProfilePage() {
       try {
         setSelectedSection("POSTS");
         const freshData = await getUserProfile(username);
-        if (freshData.id === currentUser.id) {
+        if (freshData.id === currentUser?.id) {
           setCurrentUser(freshData);
           updateFriendRequests(freshData?.receivedRequests || []);
         }
