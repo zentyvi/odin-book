@@ -111,7 +111,7 @@
   }
 
   .sidebar.expanded {
-    position: fixed;
+    position: fixed !important;
     top: 0;
     background-color: var(--background-secondary);
     display: flex;

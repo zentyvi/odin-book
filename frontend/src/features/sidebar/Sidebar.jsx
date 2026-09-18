@@ -16,6 +16,10 @@ function Sidebar({ onClose }) {
   const { user, isAuthenticated } = useAuth();
   const { isSidebarOpen } = useSidebar();
 
+  const myChats = Array.isArray(chats)
+    ? chats.filter((chat) => chat.id)
+    : undefined;
+
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -79,7 +83,7 @@ function Sidebar({ onClose }) {
       <div className={styles["sidebar__content"]}>
         <nav className={styles["sidebar__nav"]} aria-label="Site navigation">
           <Navigation styles={styles} onItemClick={handleClose} />
-          <Chats chats={chats} onItemClick={handleClose} />
+          <Chats chats={myChats} onItemClick={handleClose} />
         </nav>
       </div>
     </aside>
