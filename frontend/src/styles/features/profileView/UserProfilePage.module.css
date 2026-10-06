@@ -193,10 +193,6 @@
   gap: 0.5rem;
 }
 
-.profile__loader {
-  transform: scale(1.5);
-}
-
 @media (max-width: 560px) {
   .profile-header__top {
     flex-direction: column;

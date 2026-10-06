@@ -1,6 +1,15 @@
+import { useEffect, useState } from "react";
 import styles from "../styles/components/Loader.module.css";
 
 function Loader({ label = "Loading...", className = "" }) {
+  const [isTimeout, setIsTimeout] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsTimeout(true);
+    }, 3000);
+  }, []);
+
   return (
     <div
       data-testid="loader"
@@ -20,7 +29,16 @@ function Loader({ label = "Loading...", className = "" }) {
         <div className={styles["core"]} />
       </div>
 
-      {label && <span className={styles["loader-label"]}>{label}</span>}
+      <div className={styles["loader__labels"]}>
+        {label && <span className={styles["loader-label"]}>{label}</span>}
+        <span
+          className={styles["loader-label"]}
+          style={{ color: isTimeout ? "var(--text-muted)" : "transparent" }}
+          aria-hidden={!isTimeout}
+        >
+          It may take some time, the server is starting up.
+        </span>
+      </div>
     </div>
   );
 }

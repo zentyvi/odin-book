@@ -76,7 +76,3 @@
   flex-direction: column;
   gap: 0.25rem;
 }
-
-.friends-page__loader {
-  transform: scale(1.5);
-}
