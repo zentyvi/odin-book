@@ -10,8 +10,8 @@ import styles from "../../../styles/features/chat/ChatHeader.module.css";
 
 function ChatHeader({ chat }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { removeChatFromCache, settings } = useData();
   const { openModal } = useModal();
-  const { removeChatFromCache, findChat, settings } = useData();
   const { companion } = chat;
   const fullName = getFullName(companion);
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ function ChatHeader({ chat }) {
   const closeMenu = () => setIsMenuOpen(false);
   useEscape(closeMenu);
 
-  const hasChat = Boolean(findChat(chat?.id));
+  const hasChat = Boolean(chat?.id);
 
   const handleDelete = async () => {
     try {
@@ -88,20 +88,21 @@ function ChatHeader({ chat }) {
         </button>
       </div>
 
-      <div className={styles["chat-header__actions"]}>
-        <button
-          type="button"
-          disabled={!hasChat}
-          aria-label="Actions menu"
-          aria-expanded={isMenuOpen}
-          aria-haspopup="true"
-          className={styles["chat-header__action-btn"]}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <i className="bi bi-three-dots-vertical" />
-        </button>
-        {isMenuOpen && actionsMenu}
-      </div>
+      {hasChat && (
+        <div className={styles["chat-header__actions"]}>
+          <button
+            type="button"
+            aria-label="Actions menu"
+            aria-expanded={isMenuOpen}
+            aria-haspopup="true"
+            className={styles["chat-header__action-btn"]}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className="bi bi-three-dots-vertical" />
+          </button>
+          {isMenuOpen && actionsMenu}
+        </div>
+      )}
     </header>
   );
 }
